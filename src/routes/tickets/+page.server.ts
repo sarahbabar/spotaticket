@@ -1,7 +1,8 @@
-import { TICKETMASTER_API_KEY } from '$env/static/private';
+import { NAMESPACE_KEY, TICKETMASTER_API_KEY } from '$env/static/private';
 import { Namespace } from '$lib/namespace';
 import { error, redirect } from '@sveltejs/kit';
 
+const [get, set] = Namespace("sarah", NAMESPACE_KEY);
 
 const artistURL = `https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5&offset=0`;
 const profileURL = `https://api.spotify.com/v1/me`;
@@ -23,8 +24,12 @@ export async function load({ cookies }) {
             getPlaying(access_token)
         ]);
 
+        console.log(artistData);
+        console.log(profileData);
+        console.log(playerData);
+
         const artistNames: string[] = [];
-        for (let i = 0; i < artistData.items.length; i++) {
+        for (let i = 0; i < (artistData.items || []).length; i++) {
             const encodedName = encodeURIComponent(artistData.items[i].name);
             artistNames.push(encodedName);
         }
@@ -32,18 +37,10 @@ export async function load({ cookies }) {
         const events = [];
         for (const artistName of artistNames) {
             
-            const response = await fetch(`https://app.ticketmaster.com/discovery/v2/events.json?size=200&keyword=${artistName}&apikey=${TICKETMASTER_API_KEY}`);
-
-            if(!response.ok) {
-                events.push({});
-            }
-            const eventData = await response.json();
+            const eventData = await getEvent(artistName);
             events.push(eventData);
         }
-
-        console.log(artistData);
-        console.log(profileData);
-        console.log(playerData);
+        
         console.log(artistNames);
         console.log(events);
         return {
@@ -58,6 +55,30 @@ export async function load({ cookies }) {
     }
 }
 
+async function getEvent(artistName: string) {
+
+    const eventStore = "ticketMaster".concat(artistName);
+    const cachedEvent = await get(eventStore);
+    
+    if(cachedEvent !== null) {
+        console.log("using cached", eventStore);
+        return cachedEvent;
+    }
+    const response = await fetch(`https://app.ticketmaster.com/discovery/v2/events.json?size=200&keyword=${artistName}&apikey=${TICKETMASTER_API_KEY}`);
+    console.log("fetched");
+
+    if(response.status === 429) {
+        return {};
+    }
+    if(!response.ok) {
+        await set(eventStore, {});
+        return {};
+    }
+    const resp = await response.json();
+    await set(eventStore, resp);
+    return resp;
+}
+
 async function getTopArtists(accessToken: string): Promise<any> {
 
     const response = await fetch(artistURL, {
@@ -68,7 +89,7 @@ async function getTopArtists(accessToken: string): Promise<any> {
     if(!response.ok) {
         return {};
     }
-    return response.json();
+    return await response.json();
 }
 
 async function getProfile(accessToken: string): Promise<any> {
@@ -81,20 +102,24 @@ async function getProfile(accessToken: string): Promise<any> {
     if(!response.ok) {
         return {};
     }
-    return response.json();
+    return await response.json();
 }
 
 async function getPlaying(accessToken: string): Promise<any> {
 
-    const response = await fetch(playerURL, {
-        headers: {
-            "Authorization": `Bearer ${accessToken}`
+    try {
+        const response = await fetch(playerURL, {
+            headers: {
+                "Authorization": `Bearer ${accessToken}`
+            }
+        });
+        if(!response.ok || response.status === 204) {
+            return {};
         }
-    });
-    if(!response.ok) {
+        return await response.json();
+        
+    } catch (error) {
         return {};
     }
-    return response.json();
+    
 }
-
-

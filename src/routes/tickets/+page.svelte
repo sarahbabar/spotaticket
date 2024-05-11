@@ -14,7 +14,7 @@
 <ul>
     {#each artists as artist}
         <li class="text-2xl text-black">{artist.name}</li>
-        <img src={artist.images[0].url} alt="artist img" class="rounded-full" width="200" height="200">
+        <img src={artist.images[0].url} alt="artist img" class="" width="100" height="100">
     {/each}
 
 </ul>
