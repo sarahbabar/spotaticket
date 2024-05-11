@@ -59,10 +59,15 @@ async function getEvent(artistName: string) {
 
     const eventStore = "ticketMaster".concat(artistName);
     const cachedEvent = await get(eventStore);
+    const timeDifference = Date.now() - cachedEvent.timeStamp;
     
-    if(cachedEvent !== null) {
+    if(cachedEvent !== null && timeDifference < (1000 * 60 * 60)) {
         console.log("using cached", eventStore);
-        return cachedEvent;
+        const minimalResp = {
+            events: cachedEvent._embedded ? cachedEvent._embedded.events : [],
+            timeStamp: cachedEvent.timeStamp
+        };
+        return minimalResp;
     }
     const response = await fetch(`https://app.ticketmaster.com/discovery/v2/events.json?size=200&keyword=${artistName}&apikey=${TICKETMASTER_API_KEY}`);
     console.log("fetched");
@@ -71,12 +76,26 @@ async function getEvent(artistName: string) {
         return {};
     }
     if(!response.ok) {
-        await set(eventStore, {});
+        const obj = {
+            events: [],
+            timeStamp: Date.now()
+        };
+        await set(eventStore, obj);
         return {};
     }
     const resp = await response.json();
-    await set(eventStore, resp);
-    return resp;
+    resp.timeStamp = Date.now();
+    const minimalResp:{ events: any[]; timeStamp: number }[] = [];
+
+    for(let i = 0; i < resp.length; i++) {
+        const item = resp[i];
+        const events = item._embedded ? item._embedded.events : [];
+        const timeStamp = item.timeStamp;
+        minimalResp.push({events, timeStamp});
+    }
+
+    await set(eventStore, minimalResp);
+    return minimalResp;
 }
 
 async function getTopArtists(accessToken: string): Promise<any> {
@@ -121,5 +140,4 @@ async function getPlaying(accessToken: string): Promise<any> {
     } catch (error) {
         return {};
     }
-    
 }
