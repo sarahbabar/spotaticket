@@ -61,6 +61,7 @@ async function getEvent(artistName: string) {
     const cachedEvent = await get(eventStore);
     const timeDifference = Date.now() - cachedEvent.timeStamp;
     
+    // if there exists cached data in the store and it is less than an hr old make use of it
     if(cachedEvent !== null && timeDifference < (1000 * 60 * 60)) {
         console.log("using cached", eventStore);
         const minimalResp = {
@@ -69,6 +70,7 @@ async function getEvent(artistName: string) {
         };
         return minimalResp;
     }
+    // otherwise fetch the data from ticketmaster
     const response = await fetch(`https://app.ticketmaster.com/discovery/v2/events.json?size=200&keyword=${artistName}&apikey=${TICKETMASTER_API_KEY}`);
     console.log("fetched");
 
@@ -87,13 +89,14 @@ async function getEvent(artistName: string) {
     resp.timeStamp = Date.now();
     const minimalResp:{ events: any[]; timeStamp: number }[] = [];
 
+    // minimize the response data to only include the events and timestamp
     for(let i = 0; i < resp.length; i++) {
         const item = resp[i];
-        const events = item._embedded ? item._embedded.events : [];
+        const events = item._embedded ? item._embedded.events : []; // if _embedded doesn't exist in the response, set events to an empty array
         const timeStamp = item.timeStamp;
         minimalResp.push({events, timeStamp});
     }
-
+    // set the data fetched with the corresponding artist name for the store
     await set(eventStore, minimalResp);
     return minimalResp;
 }
