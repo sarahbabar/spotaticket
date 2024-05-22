@@ -81,6 +81,20 @@ export const insertEvent = (event: TicketMasterEvent) => {
     db.prepare(insertQuery).run(event);
 };
 
+export const insertEvents = (events: TicketMasterEvent[]) => {
+    const insertQuery = `
+        INSERT OR REPLACE INTO ${tempTable} (id, name, url, date, country, city, venue)
+        VALUES (@id, @name, @url, @date, @country, @city, @venue)
+    `;
+    const prepInsert = db.prepare(insertQuery);
+    const insertMany = db.transaction((events) => {
+        for (const event of events) {
+            prepInsert.run(event)
+        }
+    });
+    insertMany(events);
+};
+
 export const swapState = () => {
     const updateStateQuery = `
         UPDATE state 
@@ -111,7 +125,7 @@ export const updateTotalPages = (pages: number) => {
 };
 
 export const deleteTempEvents = () => {
-    
+
     const deleteQuery = `DELETE FROM ${tempTable}`;
     const prepDelete = db.prepare(deleteQuery);
     const changeStateQuery = `
@@ -120,13 +134,12 @@ export const deleteTempEvents = () => {
             total_pages = 0,
             time_stamp = 0
         WHERE
-            table_name = ${tempTable}
-        END
+            table_name = @tempTable
     `;
     const prepChange = db.prepare(changeStateQuery);
     const runQuery = db.transaction(() => {
         prepDelete.run();
-        prepChange.run();
+        prepChange.run({ tempTable });
     })
     runQuery();
 };

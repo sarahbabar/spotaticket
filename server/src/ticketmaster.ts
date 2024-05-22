@@ -26,7 +26,7 @@ import { TicketMasterEvent } from "./database.js";
 //     return dataArr;
 // }
 
-let totalPages = 0;
+
 
 export async function getEventsForPage(pageNumber: number = 0): Promise<[TicketMasterEvent[], number?]> {
 
@@ -34,22 +34,17 @@ export async function getEventsForPage(pageNumber: number = 0): Promise<[TicketM
     
     // if something went wrong with the request, return the same page number to try again
     if (!response.ok) {
+        console.log("something went wrong in get events:", response.status);
         return [[], pageNumber];
     }
     const pageData = await response.json();
     const formattedData = formatData(pageData);
 
-    totalPages = pageData.page.totalPages;
-
-    if (totalPages >= pageNumber) {
+    if (pageData.page.totalPages <= pageNumber) {
         return [formattedData, undefined];
     }
-    return [formattedData, pageNumber++];
+    return [formattedData, pageNumber+1];
 } 
-
-export function getTotalPages(): number {
-    return totalPages;
-}
 
 function formatData(res: any): TicketMasterEvent[] {
     const filteredEvents = [];
@@ -74,6 +69,7 @@ function formatData(res: any): TicketMasterEvent[] {
             });
         } 
         catch (error) {
+            console.log("error from format data:", error);
             continue;
         }
     }
