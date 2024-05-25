@@ -13,9 +13,12 @@ export const initializeDatabase = () => {
             name TEXT,
             url TEXT,
             date INTEGER,
+            dma INTEGER,
             country TEXT,
             city TEXT,
-            venue TEXT
+            venue TEXT,
+            longitude TEXT,
+            latitude TEXT
         )
     `;
     const createEvents2Query = `
@@ -24,27 +27,29 @@ export const initializeDatabase = () => {
             name TEXT,
             url TEXT,
             date INTEGER,
+            dma INTEGER,
             country TEXT,
             city TEXT,
-            venue TEXT
+            venue TEXT,
+            longitude TEXT,
+            latitude TEXT
         )
     `;
     const createStateQuery = `
         CREATE TABLE IF NOT EXISTS state (
             table_name TEXT PRIMARY KEY,
             is_main INTEGER,
-            page_number INTEGER,
-            total_pages INTEGER,
+            dma_id TEXT,
             time_stamp INTEGER
         )
     `;
     const initialStateQuery1 = `
-        INSERT OR IGNORE INTO state (table_name, is_main, page_number, total_pages, time_stamp)
-        VALUES ('events1', TRUE, 0, 0, 0)
+        INSERT OR IGNORE INTO state (table_name, is_main, dma_id, time_stamp)
+        VALUES ('events1', TRUE, '', 0)
     `;
     const initialStateQuery2 = `
-        INSERT OR IGNORE INTO state (table_name, is_main, page_number, total_pages, time_stamp)
-        VALUES ('events2', FALSE, 0, 0, 0)
+        INSERT OR IGNORE INTO state (table_name, is_main, dma_id , time_stamp)
+        VALUES ('events2', FALSE, '', 0)
     `;
 
     db.prepare(createEvents1Query).run();
@@ -68,6 +73,7 @@ export type TicketMasterEvent = {
     name: string,
     url: string,
     date: number,
+    dma: number,
     country: string,
     city: string,
     venue: string
@@ -75,16 +81,16 @@ export type TicketMasterEvent = {
 
 export const insertEvent = (event: TicketMasterEvent) => {
     const insertQuery = `
-        INSERT OR REPLACE INTO ${tempTable} (id, name, url, date, country, city, venue)
-        VALUES (@id, @name, @url, @date, @country, @city, @venue)
+        INSERT OR REPLACE INTO ${tempTable} (id, name, url, date, dma, country, city, venue, longitude, latitude)
+        VALUES (@id, @name, @url, @date, @dma, @country, @city, @venue, @longitude, @latitude)
     `;
     db.prepare(insertQuery).run(event);
 };
 
 export const insertEvents = (events: TicketMasterEvent[]) => {
     const insertQuery = `
-        INSERT OR REPLACE INTO ${tempTable} (id, name, url, date, country, city, venue)
-        VALUES (@id, @name, @url, @date, @country, @city, @venue)
+        INSERT OR REPLACE INTO ${tempTable} (id, name, url, date, dma, country, city, venue, longitude, latitude)
+        VALUES (@id, @name, @url, @date, @dma, @country, @city, @venue, @longitude, @latitude)
     `;
     const prepInsert = db.prepare(insertQuery);
     const insertMany = db.transaction((events) => {
@@ -108,30 +114,28 @@ export const swapState = () => {
     tempTable = (mainTable === 'events1') ? 'events2' : 'events1';
 };
 
-export const updatePageNumber = (pageNumber: number) => {
-    const updatePageQuery = `
-        UPDATE state 
-        SET page_number = @pageNumber
-    `;
-    db.prepare(updatePageQuery).run({pageNumber});
-};
+// export const updatePageNumber = (pageNumber: number) => {
+//     const updatePageQuery = `
+//         UPDATE state 
+//         SET page_number = @pageNumber
+//     `;
+//     db.prepare(updatePageQuery).run({pageNumber});
+// };
 
-export const updateTotalPages = (pages: number) => {
-    const updateTotalPagesQuery = `
-        UPDATE state
-        SET total_pages = @pages
-    `;
-    db.prepare(updateTotalPagesQuery).run({pages});
-};
+// export const updateTotalPages = (pages: number) => {
+//     const updateTotalPagesQuery = `
+//         UPDATE state
+//         SET total_pages = @pages
+//     `;
+//     db.prepare(updateTotalPagesQuery).run({pages});
+// };
 
 export const deleteTempEvents = () => {
-
     const deleteQuery = `DELETE FROM ${tempTable}`;
     const prepDelete = db.prepare(deleteQuery);
     const changeStateQuery = `
         UPDATE state
-        SET page_number = 0,
-            total_pages = 0,
+        SET dma_id = '',
             time_stamp = 0
         WHERE
             table_name = @tempTable
