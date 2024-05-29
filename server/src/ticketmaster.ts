@@ -79,14 +79,21 @@ async function getEventsByPage(dmaID: number, page: number, totalPages: number, 
 }
 
 function formatData(res: any, dma: number): TicketMasterEvent[] {
+    let skip = 0;
     const filteredEvents = [];
+    const regex = /artist\/(.*?)(?:\?|$)/;
     
     try {
         const _ = res._embedded.events;
     } catch (error) {
-        console.log("failed to get event in formatData:", res);
+        console.log("no events in dma", dma); // could also be b/c of no event for specific genre
+        return [];
     }
     const rawEvents = res._embedded.events;
+    const match = (str: string, regex: any) => {
+        const m = regex.exec(str);
+        return m ? m[1] : ""};
+
     for (let i = 0; i < rawEvents.length; i++) {
         try {
             const {name: eventName, id, url, dates: {start: {localDate}}, _embedded: {venues:[{name: venueName, city: {name: cityName}, country: {countryCode}, location: {longitude, latitude}}], attractions}} = rawEvents[i];
@@ -95,28 +102,48 @@ function formatData(res: any, dma: number): TicketMasterEvent[] {
                 continue
             }
 
-            for (let j = 0; j < attractions.length; j++) {
-                
+            const attractionsList = [];
+
+            for (const attraction of attractions) {
+                const {name: artist_name, id: artist_id, url: artist_url, externalLinks} = attraction;
+
+                let spotify_id = "";
+
+                if (externalLinks && externalLinks.spotify) {
+                    spotify_id = match(externalLinks.spotify[0].url, regex);
+                }
+
+                attractionsList.push({
+                    id: id.concat(artist_id), 
+                    event_id: id,
+                    artist_name,
+                    artist_id,
+                    artist_url,
+                    spotify_id
+                });
             }
-            
             // fix date/incorrect
             filteredEvents.push({
                 id,
                 name: eventName,
                 url,
-                date: new Date(localDate).getTime()/1000,
+                date: localDate,
                 dma,
                 country: countryCode,
                 city: cityName,
                 venue: venueName,
                 longitude,
-                latitude
+                latitude,
+                attractions: attractionsList
             });
         } 
         catch (error) {
-            console.log("error from format data, skipping dma:", dma);
+            skip++;
             continue;
         }
+    }
+    if (skip > 0) {
+        console.log(`skipped ${skip} from ${dma}\n`);
     }
     return filteredEvents;
 }

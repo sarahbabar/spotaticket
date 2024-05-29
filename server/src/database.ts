@@ -17,7 +17,7 @@ export const initializeDatabase = () => {
             id TEXT PRIMARY KEY,
             name TEXT,
             url TEXT,
-            date INTEGER,
+            date TEXT,
             dma INTEGER,
             country TEXT,
             city TEXT,
@@ -31,7 +31,7 @@ export const initializeDatabase = () => {
             id TEXT PRIMARY KEY,
             name TEXT,
             url TEXT,
-            date INTEGER,
+            date TEXT,
             dma INTEGER,
             country TEXT,
             city TEXT,
@@ -50,22 +50,22 @@ export const initializeDatabase = () => {
     `;
     const createAttractions1Query = `
         CREATE TABLE IF NOT EXISTS attractions1 (
-            attraction_id INTEGER PRIMARY KEY,
+            id TEXT PRIMARY KEY,
             event_id TEXT,
             artist_name TEXT,
-            event_url TEXT,
+            artist_url TEXT,
             artist_id TEXT,
-            spotify_id TEXT,
+            spotify_id TEXT
         )
     `;
     const createAttractions2Query = `
         CREATE TABLE IF NOT EXISTS attractions2 (
-            attraction_id INTEGER PRIMARY KEY,
+            id TEXT PRIMARY KEY,
             event_id TEXT,
             artist_name TEXT,
-            event_url TEXT,
+            artist_url TEXT,
             artist_id TEXT,
-            spotify_id TEXT,
+            spotify_id TEXT
         )
     `;
     const initialStateQuery1 = `
@@ -79,6 +79,8 @@ export const initializeDatabase = () => {
 
     db.prepare(createEvents1Query).run();
     db.prepare(createEvents2Query).run();
+    db.prepare(createAttractions1Query).run();
+    db.prepare(createAttractions2Query).run();
     db.prepare(createStateQuery).run();
     db.prepare(initialStateQuery1).run();
     db.prepare(initialStateQuery2).run();
@@ -102,19 +104,22 @@ export type TicketMasterEvent = {
     id: string,
     name: string,
     url: string,
-    date: number,
+    date: string,
     dma: number,
     country: string,
     city: string,
-    venue: string
+    venue: string,
+    longitude: string,
+    latitude: string,
+    attractions: TicketMasterAttraction[]
 };
 
 export type TicketMasterAttraction = {
-    attraction_id: number,
+    id: string,
     event_id: string,
     artist_name: string,
     artist_id: string,
-    event_url: string,
+    artist_url: string,
     spotify_id: string
 }
 
@@ -127,32 +132,42 @@ export type TicketMasterAttraction = {
 // };
 
 export const insertEvents = (events: TicketMasterEvent[]) => {
-    const insertQuery = `
+    const insertEventsQuery = `
         INSERT OR REPLACE INTO events${tempTable} (id, name, url, date, dma, country, city, venue, longitude, latitude)
         VALUES (@id, @name, @url, @date, @dma, @country, @city, @venue, @longitude, @latitude)
     `;
-    const prepInsert = db.prepare(insertQuery);
+    const insertAttrQuery = `
+        INSERT OR REPLACE INTO attractions${tempTable} (id, event_id, artist_name, artist_id, artist_url, spotify_id)
+        VALUES (@id, @event_id, @artist_name, @artist_id, @artist_url, @spotify_id)
+    `;
+    const prepInsertEvents = db.prepare(insertEventsQuery);
+
+    const prepInsertAttr = db.prepare(insertAttrQuery);
     const insertMany = db.transaction((events) => {
         for (const event of events) {
-            prepInsert.run(event)
+            prepInsertEvents.run(event);
+
+            for (const attraction of event.attractions) {
+                prepInsertAttr.run(attraction);
+            }
         }
     });
     insertMany(events);
 };
 
-export const insertAttractions = (attractions: TicketMasterAttraction[]) => {
-    const insertQuery = `
-        INSERT OR REPLACE INTO attractions${tempTable} (attraction_id, event_id, artist_name, artist_id, event_url, spotigy_id)
-        VALUES (@attraction_id, @event_id, @artist_name, @artist_id, @event_url, @spotigy_id)
-    `;
-    const prepInsert = db.prepare(insertQuery);
-    const insertMany = db.transaction((attractions) => {
-        for (const attraction of attractions) {
-            prepInsert.run(attraction)
-        }
-    });
-    insertMany(attractions);
-};
+// export const insertAttractions = (attractions: TicketMasterAttraction[]) => {
+//     const insertQuery = `
+//         INSERT OR REPLACE INTO attractions${tempTable} (attraction_id, event_id, artist_name, artist_id, event_url, spotigy_id)
+//         VALUES (@attraction_id, @event_id, @artist_name, @artist_id, @event_url, @spotigy_id)
+//     `;
+//     const prepInsert = db.prepare(insertQuery);
+//     const insertMany = db.transaction((attractions) => {
+//         for (const attraction of attractions) {
+//             prepInsert.run(attraction)
+//         }
+//     });
+//     insertMany(attractions);
+// };
 
 export const swapState = () => {
     const updateStateQuery = `

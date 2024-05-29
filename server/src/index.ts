@@ -33,6 +33,7 @@ async function fetchAndStore() {
             console.log(`fetching for ${dma}`);
             const events = await getEvents(Number(dma));
             insertEvents(events);
+            console.log(`inserted ${events.length} events`);
         }
     } catch (error) {
         console.log("error in fetch and store", error);
