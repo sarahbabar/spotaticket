@@ -15,7 +15,7 @@
 //     console.log('listening on port 3000');
 // });
 import { config } from "dotenv";
-import { db, initializeDatabase, insertEvents, deleteTempEvents, swapState, TicketMasterEvent } from "./database.js";
+import { db, initializeDatabase, insertEvents, deleteTemp, swapState, TicketMasterEvent } from "./database.js";
 import { getEvents } from "./ticketmaster.js";
 import { dmas } from "./constants.js";
 
@@ -28,7 +28,7 @@ const mirmir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function fetchAndStore() {
     try {
-        deleteTempEvents();
+        deleteTemp();
         for (const dma in dmas) {
             console.log(`fetching for ${dma}`);
             const events = await getEvents(Number(dma));

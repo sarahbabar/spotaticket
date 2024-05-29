@@ -89,11 +89,16 @@ function formatData(res: any, dma: number): TicketMasterEvent[] {
     const rawEvents = res._embedded.events;
     for (let i = 0; i < rawEvents.length; i++) {
         try {
-            const {name: eventName, id, url, dates: {start: {localDate}}, _embedded: {venues:[{name: venueName, city: {name: cityName}, country: {countryCode}, location: {longitude, latitude}}]}} = rawEvents[i];
+            const {name: eventName, id, url, dates: {start: {localDate}}, _embedded: {venues:[{name: venueName, city: {name: cityName}, country: {countryCode}, location: {longitude, latitude}}], attractions}} = rawEvents[i];
             
-            if ([eventName, id, url, localDate, venueName, cityName, countryCode, longitude, latitude].some((v) => v === undefined)) {
+            if ([eventName, id, url, localDate, venueName, cityName, countryCode, longitude, latitude, attractions].some((v) => v === undefined)) {
                 continue
             }
+
+            for (let j = 0; j < attractions.length; j++) {
+                
+            }
+            
             // fix date/incorrect
             filteredEvents.push({
                 id,
