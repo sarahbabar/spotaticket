@@ -1,17 +1,12 @@
 import Database from "better-sqlite3";
 
-// let mainEventsTable = 'events1';
-// let tempEventsTable = 'events2';
-// let mainAttrTable = 'attractions1';
-// let tempAttrTable = 'attractions2';
-
 let mainTable = "1";
 let tempTable = "2";
 
 export const db = new Database("eventsdata.db");
 
 export const initializeDatabase = () => {
-
+    // 2 tables to hold info about events, 1 to read from while/when the other is being updated
     const createEvents1Query = `
         CREATE TABLE IF NOT EXISTS events1 (
             id TEXT PRIMARY KEY,
@@ -40,6 +35,7 @@ export const initializeDatabase = () => {
             latitude TEXT
         )
     `;
+    // state table to let us know which events and attractions tables can be read from
     const createStateQuery = `
         CREATE TABLE IF NOT EXISTS state (
             table_number TEXT PRIMARY KEY,
@@ -48,6 +44,8 @@ export const initializeDatabase = () => {
             time_stamp INTEGER
         )
     `;
+    // 2 tables to hold info about attractions (artists), 1 to read from while/when the other is being updated
+    // single events may have multiple attractions
     const createAttractions1Query = `
         CREATE TABLE IF NOT EXISTS attractions1 (
             id TEXT PRIMARY KEY,
@@ -68,6 +66,15 @@ export const initializeDatabase = () => {
             spotify_id TEXT
         )
     `;
+    const createOAuthQuery = `
+        CREATE TABLE IF NOT EXISTS oauth (
+            id TEXT PRIMARY KEY,
+            access_token TEXT,
+            refresh_token TEXT,
+            token_type TEXT,
+            expires_in INTEGER
+        )
+    `;
     const initialStateQuery1 = `
         INSERT OR IGNORE INTO state (table_number, is_main, dma_id, time_stamp)
         VALUES ('1', TRUE, '', 0)
@@ -82,6 +89,7 @@ export const initializeDatabase = () => {
     db.prepare(createAttractions1Query).run();
     db.prepare(createAttractions2Query).run();
     db.prepare(createStateQuery).run();
+    db.prepare(createOAuthQuery).run();
     db.prepare(initialStateQuery1).run();
     db.prepare(initialStateQuery2).run();
 
@@ -121,16 +129,11 @@ export type TicketMasterAttraction = {
     artist_id: string,
     artist_url: string,
     spotify_id: string
-}
+};
 
-// export const insertEvent = (event: TicketMasterEvent) => {
-//     const insertQuery = `
-//         INSERT OR REPLACE INTO events${tempTable} (id, name, url, date, dma, country, city, venue, longitude, latitude)
-//         VALUES (@id, @name, @url, @date, @dma, @country, @city, @venue, @longitude, @latitude)
-//     `;
-//     db.prepare(insertQuery).run(event);
-// };
+const easternTime = new Date().toLocaleTimeString("en-US", {timeZone: 'America/New_York'});
 
+// insert concert events and attractions into the the temp tables for each
 export const insertEvents = (events: TicketMasterEvent[]) => {
     const insertEventsQuery = `
         INSERT OR REPLACE INTO events${tempTable} (id, name, url, date, dma, country, city, venue, longitude, latitude)
@@ -140,10 +143,16 @@ export const insertEvents = (events: TicketMasterEvent[]) => {
         INSERT OR REPLACE INTO attractions${tempTable} (id, event_id, artist_name, artist_id, artist_url, spotify_id)
         VALUES (@id, @event_id, @artist_name, @artist_id, @artist_url, @spotify_id)
     `;
+    const updateTimeStamp = `
+        UPDATE state
+        SET time_stamp = ${Date.now()}
+        WHERE is_main = FALSE
+    `;
     const prepInsertEvents = db.prepare(insertEventsQuery);
-
     const prepInsertAttr = db.prepare(insertAttrQuery);
+    const prepUpdateTimeStamp = db.prepare(updateTimeStamp);
     const insertMany = db.transaction((events) => {
+        prepUpdateTimeStamp.run();
         for (const event of events) {
             prepInsertEvents.run(event);
 
@@ -155,20 +164,26 @@ export const insertEvents = (events: TicketMasterEvent[]) => {
     insertMany(events);
 };
 
-// export const insertAttractions = (attractions: TicketMasterAttraction[]) => {
-//     const insertQuery = `
-//         INSERT OR REPLACE INTO attractions${tempTable} (attraction_id, event_id, artist_name, artist_id, event_url, spotigy_id)
-//         VALUES (@attraction_id, @event_id, @artist_name, @artist_id, @event_url, @spotigy_id)
-//     `;
-//     const prepInsert = db.prepare(insertQuery);
-//     const insertMany = db.transaction((attractions) => {
-//         for (const attraction of attractions) {
-//             prepInsert.run(attraction)
-//         }
-//     });
-//     insertMany(attractions);
-// };
+// copy events from updated events & attractions tables 
+export const copyEvents = () => {
+    const copyEventsQuery = `
+        INSERT OR REPLACE INTO attractions${tempTable}
+        SELECT * FROM attractions${mainTable}
+    `;
+    const copyAttractionsQuery = `
+        INSERT OR REPLACE INTO attractions${tempTable}
+        SELECT * FROM attractions${mainTable}
+    `;
+    const prepCopyEvents = db.prepare(copyEventsQuery);
+    const prepCopyAttractions = db.prepare(copyAttractionsQuery);
+    const updateMany = db.transaction(() => {
+        prepCopyEvents.run();
+        prepCopyAttractions.run();
+    });
+    updateMany();
+};
 
+// swap main and temp table numbers in the state table
 export const swapState = () => {
     const updateStateQuery = `
         UPDATE state 
@@ -178,26 +193,12 @@ export const swapState = () => {
         END
     `;
     db.prepare(updateStateQuery).run({name: mainTable});
+    // if mainTable is 1 then set it to 2, else 1
     mainTable = (mainTable === '1') ? '2' : '1';
     tempTable = (mainTable === '1') ? '2' : '1';
 };
 
-// export const updatePageNumber = (pageNumber: number) => {
-//     const updatePageQuery = `
-//         UPDATE state 
-//         SET page_number = @pageNumber
-//     `;
-//     db.prepare(updatePageQuery).run({pageNumber});
-// };
-
-// export const updateTotalPages = (pages: number) => {
-//     const updateTotalPagesQuery = `
-//         UPDATE state
-//         SET total_pages = @pages
-//     `;
-//     db.prepare(updateTotalPagesQuery).run({pages});
-// };
-
+// delete concert events and attractions from the temp tables for each, reset time stamp in state table to 0 as empty tables
 export const deleteTemp = () => {
     const deleteEventsQuery = `DELETE FROM events${tempTable}`;
     const deleteAttrQuery = `DELETE FROM attractions${tempTable}`;
@@ -219,4 +220,57 @@ export const deleteTemp = () => {
     runQuery();
 };
 
+export type OAuthData = {
+    id: string,
+    access_token: string,
+    refresh_token: string,
+    token_type: string,
+    expires_in: number
+};
 
+export const insertOAuthData = (oauthData: OAuthData) => {
+    const insertOAuthQuery = `
+        INSERT OR REPLACE INTO oauth (id, access_token, refresh_token, token_type, expires_in)
+        VALUES (@id, @access_token, @refresh_token, @token_type, @expires_in)
+    `;
+    db.prepare(insertOAuthQuery).run(oauthData);
+};
+
+
+// export const updatePageNumber = (pageNumber: number) => {
+//     const updatePageQuery = `
+//         UPDATE state 
+//         SET page_number = @pageNumber
+//     `;
+//     db.prepare(updatePageQuery).run({pageNumber});
+// };
+
+// export const updateTotalPages = (pages: number) => {
+//     const updateTotalPagesQuery = `
+//         UPDATE state
+//         SET total_pages = @pages
+//     `;
+//     db.prepare(updateTotalPagesQuery).run({pages});
+// };
+
+// export const insertAttractions = (attractions: TicketMasterAttraction[]) => {
+//     const insertQuery = `
+//         INSERT OR REPLACE INTO attractions${tempTable} (attraction_id, event_id, artist_name, artist_id, event_url, spotigy_id)
+//         VALUES (@attraction_id, @event_id, @artist_name, @artist_id, @event_url, @spotigy_id)
+//     `;
+//     const prepInsert = db.prepare(insertQuery);
+//     const insertMany = db.transaction((attractions) => {
+//         for (const attraction of attractions) {
+//             prepInsert.run(attraction)
+//         }
+//     });
+//     insertMany(attractions);
+// };
+
+// export const insertEvent = (event: TicketMasterEvent) => {
+//     const insertQuery = `
+//         INSERT OR REPLACE INTO events${tempTable} (id, name, url, date, dma, country, city, venue, longitude, latitude)
+//         VALUES (@id, @name, @url, @date, @dma, @country, @city, @venue, @longitude, @latitude)
+//     `;
+//     db.prepare(insertQuery).run(event);
+// };
