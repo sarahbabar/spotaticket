@@ -164,25 +164,6 @@ export const insertEvents = (events: TicketMasterEvent[]) => {
     insertMany(events);
 };
 
-// copy events from updated events & attractions tables 
-export const copyEvents = () => {
-    const copyEventsQuery = `
-        INSERT OR REPLACE INTO attractions${tempTable}
-        SELECT * FROM attractions${mainTable}
-    `;
-    const copyAttractionsQuery = `
-        INSERT OR REPLACE INTO attractions${tempTable}
-        SELECT * FROM attractions${mainTable}
-    `;
-    const prepCopyEvents = db.prepare(copyEventsQuery);
-    const prepCopyAttractions = db.prepare(copyAttractionsQuery);
-    const updateMany = db.transaction(() => {
-        prepCopyEvents.run();
-        prepCopyAttractions.run();
-    });
-    updateMany();
-};
-
 // swap main and temp table numbers in the state table
 export const swapState = () => {
     const updateStateQuery = `
@@ -236,6 +217,41 @@ export const insertOAuthData = (oauthData: OAuthData) => {
     db.prepare(insertOAuthQuery).run(oauthData);
 };
 
+// search using keyword (spotify ID and artist name)
+export const searchTable = (spotifyID: string, artistName: string) => {
+    const selectQuery = `
+        SELECT events${mainTable}.*, attractions${mainTable}.*
+        FROM events${mainTable}
+        JOIN attractions${mainTable} ON attractions${mainTable}.event_id = events${mainTable}.id
+        WHERE attractions${mainTable}.spotify_id = ? OR attractions${mainTable}.artist_name = ?
+    `;
+    const selectStmt = db.prepare(selectQuery);
+    const events = selectStmt.all(spotifyID, artistName);
+    console.log(events);
+    console.log(events.length);
+};
+
+
+
+
+// copy data from updated events & attractions tables 
+// export const copyEvents = () => {
+//     const copyEventsQuery = `
+//         INSERT OR REPLACE INTO attractions${tempTable}
+//         SELECT * FROM attractions${mainTable}
+//     `;
+//     const copyAttractionsQuery = `
+//         INSERT OR REPLACE INTO attractions${tempTable}
+//         SELECT * FROM attractions${mainTable}
+//     `;
+//     const prepCopyEvents = db.prepare(copyEventsQuery);
+//     const prepCopyAttractions = db.prepare(copyAttractionsQuery);
+//     const updateMany = db.transaction(() => {
+//         prepCopyEvents.run();
+//         prepCopyAttractions.run();
+//     });
+//     updateMany();
+// };
 
 // export const updatePageNumber = (pageNumber: number) => {
 //     const updatePageQuery = `
