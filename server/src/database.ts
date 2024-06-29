@@ -217,6 +217,18 @@ export const insertOAuthData = (oauthData: OAuthData) => {
     db.prepare(insertOAuthQuery).run(oauthData);
 };
 
+const selectQuery = `
+        SELECT *
+        FROM oauth
+        WHERE oauth.id = ?
+    `;
+const selectStmt = db.prepare(selectQuery);
+
+export const searchOAuthData = (uid: string) => {
+    const oauthData = selectStmt.get(uid);
+    return oauthData;
+};
+
 // search using keyword (spotify ID and artist name)
 export const searchTable = (spotifyID: string, artistName: string) => {
     const selectQuery = `
@@ -227,8 +239,9 @@ export const searchTable = (spotifyID: string, artistName: string) => {
     `;
     const selectStmt = db.prepare(selectQuery);
     const events = selectStmt.all(spotifyID, artistName);
-    console.log(events);
-    console.log(events.length);
+    return events;
+    // console.log(events);
+    // console.log(events.length);
 };
 
 

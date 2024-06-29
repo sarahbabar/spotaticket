@@ -1,8 +1,7 @@
 import { NAMESPACE_KEY, TICKETMASTER_API_KEY } from '$env/static/private';
 import { Namespace } from '$lib/namespace';
+import { getTableTokens } from '$lib/oauth';
 import { error, redirect } from '@sveltejs/kit';
-
-const [get, set] = Namespace("sarah", NAMESPACE_KEY);
 
 const artistURL = `https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5&offset=0`;
 const profileURL = `https://api.spotify.com/v1/me`;
@@ -10,12 +9,22 @@ const playerURL = `https://api.spotify.com/v1/me/player/currently-playing`;
 
 export async function load({ cookies }) {
 
-    const access_token = cookies.get("accessToken");
+    const uid = cookies.get("session")
 
-    if(!access_token) {
-        // no access token, not logged in -> sent back home
-        throw redirect(302, "/");
-    }
+    // if no uid exists go back and login
+    if (!uid) throw redirect(302, "/");
+    
+    const oauthdata = await getTableTokens(uid);
+
+    if (!oauthdata) throw redirect(302, "/");
+    const access_token = oauthdata.access_token;
+    const refresh_token = oauthdata.refresh_token;
+    const expires_in = oauthdata.expires_in;
+
+    // if(!access_token) {
+    //     // no access token, not logged in -> sent back home
+    //     throw redirect(302, "/");
+    // }
     // otherwise
     try {
         const [artistData, profileData, playerData] = await Promise.all([
@@ -34,15 +43,15 @@ export async function load({ cookies }) {
             artistNames.push(encodedName);
         }
 
-        const events = [];
-        for (const artistName of artistNames) {
+        // const events = [];
+        // for (const artistName of artistNames) {
             
-            const eventData = await getEvent(artistName);
-            events.push(eventData);
-        }
+        //     const eventData = await getEvent(artistName);
+        //     events.push(eventData);
+        // }
         
         console.log(artistNames);
-        console.log(events);
+        // console.log(events);
         return {
             artists: artistData.items,
             profile: profileData,
@@ -55,51 +64,6 @@ export async function load({ cookies }) {
     }
 }
 
-async function getEvent(artistName: string) {
-
-    const eventStore = "ticketMaster".concat(artistName);
-    const cachedEvent = await get(eventStore);
-    const timeDifference = Date.now() - cachedEvent.timeStamp;
-    
-    // if there exists cached data in the store and it is less than an hr old make use of it
-    if(cachedEvent !== null && timeDifference < (1000 * 60 * 60)) {
-        console.log("using cached", eventStore);
-        const minimalResp = {
-            events: cachedEvent._embedded ? cachedEvent._embedded.events : [],
-            timeStamp: cachedEvent.timeStamp
-        };
-        return minimalResp;
-    }
-    // otherwise fetch the data from ticketmaster
-    const response = await fetch(`https://app.ticketmaster.com/discovery/v2/events.json?size=200&keyword=${artistName}&apikey=${TICKETMASTER_API_KEY}`);
-    console.log("fetched");
-
-    if(response.status === 429) {
-        return {};
-    }
-    if(!response.ok) {
-        const obj = {
-            events: [],
-            timeStamp: Date.now()
-        };
-        await set(eventStore, obj);
-        return {};
-    }
-    const resp = await response.json();
-    resp.timeStamp = Date.now();
-    const minimalResp:{ events: any[]; timeStamp: number }[] = [];
-
-    // minimize the response data to only include the events and timestamp
-    for(let i = 0; i < resp.length; i++) {
-        const item = resp[i];
-        const events = item._embedded ? item._embedded.events : []; // if _embedded doesn't exist in the response, set events to an empty array
-        const timeStamp = item.timeStamp;
-        minimalResp.push({events, timeStamp});
-    }
-    // set the data fetched with the corresponding artist name for the store
-    await set(eventStore, minimalResp);
-    return minimalResp;
-}
 
 async function getTopArtists(accessToken: string): Promise<any> {
 
@@ -144,3 +108,50 @@ async function getPlaying(accessToken: string): Promise<any> {
         return {};
     }
 }
+
+// async function getEvent(artistName: string) {
+
+//     const eventStore = "ticketMaster".concat(artistName);
+//     const cachedEvent = await get(eventStore);
+//     const timeDifference = Date.now() - cachedEvent.timeStamp;
+    
+//     // if there exists cached data in the store and it is less than an hr old make use of it
+//     if(cachedEvent !== null && timeDifference < (1000 * 60 * 60)) {
+//         console.log("using cached", eventStore);
+//         const minimalResp = {
+//             events: cachedEvent._embedded ? cachedEvent._embedded.events : [],
+//             timeStamp: cachedEvent.timeStamp
+//         };
+//         return minimalResp;
+//     }
+//     // otherwise fetch the data from ticketmaster
+//     const response = await fetch(`https://app.ticketmaster.com/discovery/v2/events.json?size=200&keyword=${artistName}&apikey=${TICKETMASTER_API_KEY}`);
+//     console.log("fetched");
+
+//     if(response.status === 429) {
+//         return {};
+//     }
+//     if(!response.ok) {
+//         const obj = {
+//             events: [],
+//             timeStamp: Date.now()
+//         };
+//         await set(eventStore, obj);
+//         return {};
+//     }
+//     const resp = await response.json();
+//     resp.timeStamp = Date.now();
+//     const minimalResp:{ events: any[]; timeStamp: number }[] = [];
+
+//     // minimize the response data to only include the events and timestamp
+//     for(let i = 0; i < resp.length; i++) {
+//         const item = resp[i];
+//         const events = item._embedded ? item._embedded.events : []; // if _embedded doesn't exist in the response, set events to an empty array
+//         const timeStamp = item.timeStamp;
+//         minimalResp.push({events, timeStamp});
+//     }
+//     // set the data fetched with the corresponding artist name for the store
+//     await set(eventStore, minimalResp);
+//     return minimalResp;
+// }
+
