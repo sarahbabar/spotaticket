@@ -1,6 +1,6 @@
 import { NAMESPACE_KEY, TICKETMASTER_API_KEY } from '$env/static/private';
 import { Namespace } from '$lib/namespace';
-import { getTableTokens } from '$lib/oauth';
+import { checkToken, getTableTokens } from '$lib/oauth';
 import { error, redirect } from '@sveltejs/kit';
 
 const artistURL = `https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5&offset=0`;
@@ -9,17 +9,20 @@ const playerURL = `https://api.spotify.com/v1/me/player/currently-playing`;
 
 export async function load({ cookies }) {
 
-    const uid = cookies.get("session")
+    const uuid = cookies.get("session")
 
     // if no uid exists go back and login
-    if (!uid) throw redirect(302, "/");
+    if (!uuid) throw redirect(302, "/");
     
-    const oauthdata = await getTableTokens(uid);
+    const oauthdata = await getTableTokens(uuid);
 
     if (!oauthdata) throw redirect(302, "/");
-    const access_token = oauthdata.access_token;
-    const refresh_token = oauthdata.refresh_token;
+
     const expires_in = oauthdata.expires_in;
+    const time_stamp = oauthdata.time_stamp;
+
+    // have access token, need to check if useable (not expired)
+    const access_token = await checkToken(uuid, oauthdata.access_token, oauthdata.refresh_token, expires_in, time_stamp);
 
     // if(!access_token) {
     //     // no access token, not logged in -> sent back home
@@ -33,9 +36,9 @@ export async function load({ cookies }) {
             getPlaying(access_token)
         ]);
 
-        console.log(artistData);
-        console.log(profileData);
-        console.log(playerData);
+        //console.log(artistData);
+        //console.log(profileData);
+        //console.log(playerData);
 
         const artistNames: string[] = [];
         for (let i = 0; i < (artistData.items || []).length; i++) {

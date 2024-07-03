@@ -5,6 +5,7 @@ let tempTable = "2";
 
 export const db = new Database("eventsdata.db");
 
+
 export const initializeDatabase = () => {
     // 2 tables to hold info about events, 1 to read from while/when the other is being updated
     const createEvents1Query = `
@@ -66,13 +67,18 @@ export const initializeDatabase = () => {
             spotify_id TEXT
         )
     `;
+    const deleteOauthQuery = `
+        DROP TABLE IF EXISTS oauth
+    `;
+
     const createOAuthQuery = `
         CREATE TABLE IF NOT EXISTS oauth (
             id TEXT PRIMARY KEY,
             access_token TEXT,
             refresh_token TEXT,
             token_type TEXT,
-            expires_in INTEGER
+            expires_in INTEGER,
+            time_stamp INTEGER
         )
     `;
     const initialStateQuery1 = `
@@ -89,6 +95,7 @@ export const initializeDatabase = () => {
     db.prepare(createAttractions1Query).run();
     db.prepare(createAttractions2Query).run();
     db.prepare(createStateQuery).run();
+    // db.prepare(deleteOauthQuery).run();
     db.prepare(createOAuthQuery).run();
     db.prepare(initialStateQuery1).run();
     db.prepare(initialStateQuery2).run();
@@ -107,6 +114,8 @@ export const initializeDatabase = () => {
     // mainAttrTable = "attractions".concat(tableNumber);
     // tempAttrTable = (mainEventsTable === 'attractions1') ? 'attractions2' : 'attractions1';
 };
+
+initializeDatabase();
 
 export type TicketMasterEvent = {
     id: string,
@@ -206,15 +215,18 @@ export type OAuthData = {
     access_token: string,
     refresh_token: string,
     token_type: string,
-    expires_in: number
+    expires_in: number,
+    time_stamp: number
 };
 
-export const insertOAuthData = (oauthData: OAuthData) => {
-    const insertOAuthQuery = `
-        INSERT OR REPLACE INTO oauth (id, access_token, refresh_token, token_type, expires_in)
-        VALUES (@id, @access_token, @refresh_token, @token_type, @expires_in)
+const insertOAuthQuery = `
+        INSERT OR REPLACE INTO oauth (id, access_token, refresh_token, token_type, expires_in, time_stamp)
+        VALUES (@id, @access_token, @refresh_token, @token_type, @expires_in, @time_stamp)
     `;
-    db.prepare(insertOAuthQuery).run(oauthData);
+const insertPrep = db.prepare(insertOAuthQuery);
+
+export const insertOAuthData = (oauthData: OAuthData) => {
+    insertPrep.run(oauthData);
 };
 
 const selectQuery = `
@@ -227,6 +239,17 @@ const selectStmt = db.prepare(selectQuery);
 export const searchOAuthData = (uid: string) => {
     const oauthData = selectStmt.get(uid);
     return oauthData;
+};
+
+const deleteQuery = `
+    DELETE FROM oauth 
+    WHERE oauth.id = ?
+`;
+
+const prepDelete = db.prepare(deleteQuery);
+
+export const deleteOAuthUser = (uid: string) => {
+    prepDelete.run(uid);
 };
 
 // search using keyword (spotify ID and artist name)
@@ -244,62 +267,14 @@ export const searchTable = (spotifyID: string, artistName: string) => {
     // console.log(events.length);
 };
 
+const deleteExpiredQuery = `
+        DELETE FROM oauth 
+        WHERE (@currentTime >= (oauth.time_stamp + oauth.expires_in)) 
+`;
+const prepExpiredDelete = db.prepare(deleteExpiredQuery);
 
+export const deleteExpired = () => {
+    const currentTime = Date.now()/1000;
 
-
-// copy data from updated events & attractions tables 
-// export const copyEvents = () => {
-//     const copyEventsQuery = `
-//         INSERT OR REPLACE INTO attractions${tempTable}
-//         SELECT * FROM attractions${mainTable}
-//     `;
-//     const copyAttractionsQuery = `
-//         INSERT OR REPLACE INTO attractions${tempTable}
-//         SELECT * FROM attractions${mainTable}
-//     `;
-//     const prepCopyEvents = db.prepare(copyEventsQuery);
-//     const prepCopyAttractions = db.prepare(copyAttractionsQuery);
-//     const updateMany = db.transaction(() => {
-//         prepCopyEvents.run();
-//         prepCopyAttractions.run();
-//     });
-//     updateMany();
-// };
-
-// export const updatePageNumber = (pageNumber: number) => {
-//     const updatePageQuery = `
-//         UPDATE state 
-//         SET page_number = @pageNumber
-//     `;
-//     db.prepare(updatePageQuery).run({pageNumber});
-// };
-
-// export const updateTotalPages = (pages: number) => {
-//     const updateTotalPagesQuery = `
-//         UPDATE state
-//         SET total_pages = @pages
-//     `;
-//     db.prepare(updateTotalPagesQuery).run({pages});
-// };
-
-// export const insertAttractions = (attractions: TicketMasterAttraction[]) => {
-//     const insertQuery = `
-//         INSERT OR REPLACE INTO attractions${tempTable} (attraction_id, event_id, artist_name, artist_id, event_url, spotigy_id)
-//         VALUES (@attraction_id, @event_id, @artist_name, @artist_id, @event_url, @spotigy_id)
-//     `;
-//     const prepInsert = db.prepare(insertQuery);
-//     const insertMany = db.transaction((attractions) => {
-//         for (const attraction of attractions) {
-//             prepInsert.run(attraction)
-//         }
-//     });
-//     insertMany(attractions);
-// };
-
-// export const insertEvent = (event: TicketMasterEvent) => {
-//     const insertQuery = `
-//         INSERT OR REPLACE INTO events${tempTable} (id, name, url, date, dma, country, city, venue, longitude, latitude)
-//         VALUES (@id, @name, @url, @date, @dma, @country, @city, @venue, @longitude, @latitude)
-//     `;
-//     db.prepare(insertQuery).run(event);
-// };
+    prepExpiredDelete.run({currentTime});
+}

@@ -2,13 +2,11 @@ import express from "express";
 // @ts-ignore
 import { handler } from "../../build/handler.js";
 import { config } from "dotenv";
-import { db, initializeDatabase, insertEvents, deleteTemp, swapState, TicketMasterEvent, searchTable, insertOAuthData, searchOAuthData } from "./database.js";
+import { db, initializeDatabase, insertEvents, deleteTemp, swapState, TicketMasterEvent, searchTable, insertOAuthData, searchOAuthData, deleteOAuthUser, deleteExpired } from "./database.js";
 import { getEvents } from "./ticketmaster.js";
 import { dmas } from "./constants.js";
 
 config();
-initializeDatabase();
-
 const app = express();
 
 app.get('/api/search', (req, res) => {
@@ -27,6 +25,11 @@ app.get('/api/search', (req, res) => {
 });
 
 app.get('/oauth/:uid', (req, res) => {
+    if (req.headers.token !== process.env.ADMIN_KEY) {
+        res.status(401).send('unauthorized');
+        return
+    }
+
     const uid = req.params.uid;
     console.log(`uid:${uid}`);
 
@@ -34,17 +37,26 @@ app.get('/oauth/:uid', (req, res) => {
         return res.status(400).send('Missing uid');
     }
     try {
-        const searchResults = searchOAuthData(uid as string);
-        res.json(searchResults);
+        const searchResult = searchOAuthData(uid as string);
+        // console.log("search result: ", searchResult);
+        res.json(searchResult);
     } catch (error) {
         res.status(500).send('internal server error');
     }
 });
 
 app.post('/oauth', express.json({type: '*/*'}), (req, res) => {
+    if (req.headers.token !== process.env.ADMIN_KEY) {
+        res.status(401).send('unauthorized');
+        return
+    }
+
     const oauthData = req.body;
 
-    if(!oauthData.id || !oauthData.access_token || !oauthData.refresh_token || !oauthData.token_type || !oauthData.expires_in) {
+    if( 
+        (oauthData.id === undefined) || (oauthData.access_token === undefined) || 
+        (oauthData.refresh_token === undefined) || (oauthData.token_type === undefined) || 
+        (oauthData.expires_in === undefined) || (oauthData.time_stamp === undefined)) {
         return res.status(400).send('Missing some data');
     }
     try {
@@ -53,6 +65,25 @@ app.post('/oauth', express.json({type: '*/*'}), (req, res) => {
         return res.status(500).send('internal server error');
     }
     return res.send("set");
+});
+
+app.delete('/oauth/:uid', (req, res) => {
+    if (req.headers.token !== process.env.ADMIN_KEY) {
+        res.status(401).send('unauthorized');
+        return
+    }
+    const uid = req.params.uid;
+    console.log("deleting ", uid);
+
+    if (!uid) {
+        return res.status(400).send('Missing uid');
+    }
+    try {
+        deleteOAuthUser(uid as string);
+        res.send("deleted");
+    } catch (error) {
+        res.status(500).send('internal server error');
+    }
 });
 
 app.use(handler);
@@ -64,6 +95,7 @@ app.listen(3000, () => {
 //swapState();
 
 // when refreshing/clearing db also check for expired tokens 
+deleteExpired();
 
 const refreshTime = (12 * 60 * 60 * 1000); //12 hours
 const mirmir = (ms: number) => new Promise((r) => setTimeout(r, ms));
