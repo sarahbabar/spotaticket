@@ -67,7 +67,6 @@ export async function load({ cookies }) {
     }
 }
 
-
 async function getTopArtists(accessToken: string): Promise<any> {
 
     const response = await fetch(artistURL, {
@@ -112,49 +111,4 @@ async function getPlaying(accessToken: string): Promise<any> {
     }
 }
 
-// async function getEvent(artistName: string) {
-
-//     const eventStore = "ticketMaster".concat(artistName);
-//     const cachedEvent = await get(eventStore);
-//     const timeDifference = Date.now() - cachedEvent.timeStamp;
-    
-//     // if there exists cached data in the store and it is less than an hr old make use of it
-//     if(cachedEvent !== null && timeDifference < (1000 * 60 * 60)) {
-//         console.log("using cached", eventStore);
-//         const minimalResp = {
-//             events: cachedEvent._embedded ? cachedEvent._embedded.events : [],
-//             timeStamp: cachedEvent.timeStamp
-//         };
-//         return minimalResp;
-//     }
-//     // otherwise fetch the data from ticketmaster
-//     const response = await fetch(`https://app.ticketmaster.com/discovery/v2/events.json?size=200&keyword=${artistName}&apikey=${TICKETMASTER_API_KEY}`);
-//     console.log("fetched");
-
-//     if(response.status === 429) {
-//         return {};
-//     }
-//     if(!response.ok) {
-//         const obj = {
-//             events: [],
-//             timeStamp: Date.now()
-//         };
-//         await set(eventStore, obj);
-//         return {};
-//     }
-//     const resp = await response.json();
-//     resp.timeStamp = Date.now();
-//     const minimalResp:{ events: any[]; timeStamp: number }[] = [];
-
-//     // minimize the response data to only include the events and timestamp
-//     for(let i = 0; i < resp.length; i++) {
-//         const item = resp[i];
-//         const events = item._embedded ? item._embedded.events : []; // if _embedded doesn't exist in the response, set events to an empty array
-//         const timeStamp = item.timeStamp;
-//         minimalResp.push({events, timeStamp});
-//     }
-//     // set the data fetched with the corresponding artist name for the store
-//     await set(eventStore, minimalResp);
-//     return minimalResp;
-// }
 
