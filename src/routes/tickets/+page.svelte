@@ -16,6 +16,11 @@
         border-right-style: dotted;
         border-right-color: slategray;
     }
+    .box {
+        --mask: radial-gradient(4px at right,#ffffff00 97%,#ffffff) 50%/ 100% 13px;
+        -webkit-mask: var(--mask);
+                mask: var(--mask);
+}
 </style>
 
 
@@ -46,7 +51,7 @@
             
             <div class="flex bg-white h-60 w-[600px]">
                 
-                <div class="w-[430px] text-lg">
+                <div class="w-[430px] bg-tm text-lg">
                     <div class="grid grid-cols-3 font-mono text-zinc-800 text-center my-3 mx-4 py-1 border-y-[1px] border-zinc-800">
                         <p>TUESDAY</p>
                         <p>OCTOBER 29TH</p>
@@ -61,7 +66,7 @@
                 </div>
 
                 <div class="relative w-[170px] h-60 border-zinc-800/50 border-dashed border-l-2">
-                    <div class="relative w-[172px] h-60 border-slate-500 border-dotted border-r-[9px]">
+                    <div class="relative w-[172px] h-60 bg-white box">
                     <ul class="absolute -bottom-7 left-0 w-60 -rotate-90 origin-top-left flex space-x-3 text-sm font-mono font-bold px-1 pt-2">
                         <li class="text-zinc-800/50">ADMIT ONE</li> 
                         <li class="text-zinc-800">ADMIT ONE</li> 

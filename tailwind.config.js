@@ -4,7 +4,9 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        'paper': "url('paper.jpg')"
+        'paper': "url('paper.jpg')",
+        'tmpattern': "url('ticketmaster_logo.svg')",
+        'tm': "url('tm.svg')"
       },
       fontFamily: {
         'alata': ['Alata', 'sans-serif'],
