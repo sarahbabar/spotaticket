@@ -34,8 +34,17 @@
     <ul class="flex flex-col items-center">
         {#each artists as artist}
             <Ticket
-                name={artist.name}
+                artist={artist.name}
                 picture={artist.images[0].url}
+                event={'After Hours Til Dawn Tour'}
+                city={'Toronto'}
+                country={'CA'}
+                venue={'scotiabank arena'}
+                link={"https://www.ticketmaster.com.au/pinkpantheress-west-melbourne-29-10-2024/event/13005F84CA8070E7"}
+                seat={'25'}
+                row={'M'}
+                date={['Tuesday', 'October 29th', '2024']}
+                code={435064}
             />
         {/each}
     </ul>

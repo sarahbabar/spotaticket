@@ -1,7 +1,16 @@
 <script lang="ts">
     import QR from '@svelte-put/qr/svg/QR.svelte';
-    export let name: string;
+    export let artist: string;
     export let picture: any;
+    export let event: string;
+    export let city: string;
+    export let country: string;
+    export let venue: string;
+    export let link: string;
+    export let seat: string;
+    export let row: string;
+    export let date: string[];
+    export let code: number;
 
 </script>
 
@@ -13,22 +22,22 @@
            <li class="text-white">ADMIT ONE</li> 
            <li class="text-white/50">ADMIT ONE</li> 
         </ul>
-        <p class="absolute bottom-0 right-0 text-white/50 text-sm font-mono font-bold px-3 py-2">#435064</p>
+        <p class="absolute bottom-0 right-0 text-white/50 text-sm font-mono font-bold px-3 py-2">#{ code }</p>
     </div>
     
     <div class="flex bg-white h-60 w-[600px]">
         
         <div class="w-[430px] bg-tm text-lg">
-            <div class="grid grid-cols-3 font-mono text-zinc-800 text-center my-3 mx-4 py-1 border-y-[1px] border-zinc-800">
-                <p>TUESDAY</p>
-                <p>OCTOBER 29TH</p>
-                <p>2024</p>
+            <div class="grid grid-cols-3 font-mono uppercase text-zinc-800 text-center my-3 mx-4 py-1 border-y-[1px] border-zinc-800">
+                <p>{ date[0] }</p>
+                <p>{ date[1] }</p>
+                <p>{ date[2] }</p>
             </div>
             
-            <p class="mt-4 text-3xl text-zinc-800 uppercase font-mono font-semibold m-2 text-center">{ name }</p>
-            <p class="mt-4 text-xl uppercase text-center font-dosis font-normal">After Hours til Dawn Tour</p>
-            <p class="mt-4 text-lg uppercase text-center font-mono underline underline-offset-8 decoration-zinc-800 decoration-[0.5px]">@Scotiabank Arena</p>
-            <p class="text-lg uppercase text-center font-mono">Toronto, CA</p>
+            <p class="mt-4 text-3xl text-zinc-800 uppercase font-mono font-semibold m-2 text-center">{ artist }</p>
+            <p class="mt-4 text-xl uppercase text-center font-dosis font-normal">{ event }</p>
+            <p class="mt-4 text-lg uppercase text-center font-mono underline underline-offset-8 decoration-zinc-800 decoration-[0.5px]">@{ venue }</p>
+            <p class="text-lg uppercase text-center font-mono">{ city }, { country }</p>
 
         </div>
 
@@ -46,12 +55,12 @@
 
                     <div class="text-center">
                         <p class="text-lg">ROW</p>
-                        <p class="text-3xl">M</p>
+                        <p class="text-3xl">{ row }</p>
                     </div>
 
                     <QR
                         class=""
-                        data="https://www.ticketmaster.com.au/pinkpantheress-west-melbourne-29-10-2024/event/13005F84CA8070E7"
+                        data={ link }
                         moduleFill="black"
                         anchorOuterFill="black"
                         anchorInnerFill="black"
@@ -60,14 +69,14 @@
                     />
                     <div class="text-center">
                         <p class="text-lg">SEAT</p>
-                        <p class="text-3xl">25</p>
+                        <p class="text-3xl">{ seat }</p>
                     </div>
                 </div>
         
 
              </div>
                 
-                <p class="pt-2.5 font-mono font-bold text-zinc-800/50 absolute top-1/2 transform -translate-y-4 right-0 -rotate-90">#435064</p>
+                <p class="pt-2.5 font-mono font-bold text-zinc-800/50 absolute top-1/2 transform -translate-y-4 right-0 -rotate-90">#{ code }</p>
             </div>
         </div>
         
