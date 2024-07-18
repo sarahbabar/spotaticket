@@ -3,7 +3,7 @@ import { Namespace } from '$lib/namespace';
 import { checkToken, getTableTokens } from '$lib/oauth';
 import { error, redirect } from '@sveltejs/kit';
 
-const artistURL = `https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5&offset=0`;
+const artistURL = `https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=10&offset=0`;
 const profileURL = `https://api.spotify.com/v1/me`;
 const playerURL = `https://api.spotify.com/v1/me/player/currently-playing`;
 
@@ -24,11 +24,6 @@ export async function load({ cookies }) {
     // have access token, need to check if useable (not expired)
     const access_token = await checkToken(uuid, oauthdata.access_token, oauthdata.refresh_token, expires_in, time_stamp);
 
-    // if(!access_token) {
-    //     // no access token, not logged in -> sent back home
-    //     throw redirect(302, "/");
-    // }
-    // otherwise
     try {
         const [artistData, profileData, playerData] = await Promise.all([
             getTopArtists(access_token),
@@ -36,25 +31,13 @@ export async function load({ cookies }) {
             getPlaying(access_token)
         ]);
 
-        //console.log(artistData);
-        //console.log(profileData);
-        //console.log(playerData);
-
         const artistNames: string[] = [];
         for (let i = 0; i < (artistData.items || []).length; i++) {
             const encodedName = encodeURIComponent(artistData.items[i].name);
             artistNames.push(encodedName);
         }
-
-        // const events = [];
-        // for (const artistName of artistNames) {
-            
-        //     const eventData = await getEvent(artistName);
-        //     events.push(eventData);
-        // }
         
-        console.log(artistNames);
-        // console.log(events);
+        console.log(artistData.items);
         return {
             artists: artistData.items,
             profile: profileData,

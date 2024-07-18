@@ -258,7 +258,7 @@ export const searchTable = (spotifyID: string, artistName: string) => {
         SELECT events${mainTable}.*, attractions${mainTable}.*
         FROM events${mainTable}
         JOIN attractions${mainTable} ON attractions${mainTable}.event_id = events${mainTable}.id
-        WHERE attractions${mainTable}.spotify_id = ? OR attractions${mainTable}.artist_name = ?
+        WHERE attractions${mainTable}.spotify_id = ? OR attractions${mainTable}.artist_name LIKE ?
     `;
     const selectStmt = db.prepare(selectQuery);
     const events = selectStmt.all(spotifyID, artistName);
@@ -277,4 +277,15 @@ export const deleteExpired = () => {
     const currentTime = Date.now()/1000;
 
     prepExpiredDelete.run({currentTime});
+}
+
+export const testFun = (name: string) => {
+    const testQuery = `
+        SELECT * 
+        FROM attractions2 
+        WHERE artist_name LIKE ?`;
+    const testQst = db.prepare(testQuery);
+    const stuff = testQst.all(name);
+    console.log(stuff);
+    return stuff;
 }

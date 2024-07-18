@@ -1,13 +1,16 @@
 import express from "express";
+import cors from 'cors';
 // @ts-ignore
 import { handler } from "../../build/handler.js";
 import { config } from "dotenv";
-import { db, initializeDatabase, insertEvents, deleteTemp, swapState, TicketMasterEvent, searchTable, insertOAuthData, searchOAuthData, deleteOAuthUser, deleteExpired } from "./database.js";
+import { db, initializeDatabase, insertEvents, deleteTemp, swapState, TicketMasterEvent, searchTable, insertOAuthData, searchOAuthData, deleteOAuthUser, deleteExpired, testFun } from "./database.js";
 import { getEvents } from "./ticketmaster.js";
 import { dmas } from "./constants.js";
 
+
 config();
 const app = express();
+app.use(cors());
 
 app.get('/api/search', (req, res) => {
     const { spotifyID, artistName } = req.query;
@@ -113,6 +116,7 @@ async function fetchAndStore() {
         console.log("error in fetch and store", error);
     }
 }
+
 
 // fetchAndStore();
 

@@ -14,7 +14,29 @@
 
 </script>
 
-<div class="mx-4 my-4 flex flex-row shadow-lg items-center max-w-[840px] transition duration-200 hover:scale-105">
+<style>
+    .custom-borders {
+        border-left-width: 2px;
+        border-left-style: dashed;
+        border-right-width: 10px;
+        border-right-style: dotted;
+        border-right-color: slategray;
+    }
+    .box {
+        --mask: radial-gradient(4px at right,#ffffff00 97%,#ffffff) 50%/ 100% 13px;
+        -webkit-mask: var(--mask);
+                mask: var(--mask);
+    }
+
+    .custom-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr; /* The middle column set to auto will grow as needed */
+        align-items: center; /* Align the items vertically at the center of their cells */
+    }
+
+</style>
+
+<div class="mx-4 my-4 flex flex-row shadow-lg items-center max-w-[840px] grayscale transition duration-200 hover:scale-105 hover:grayscale-0">
     <div class="w-60 h-60 relative">
         <img src={ picture } alt="artist img" class="object-cover w-full h-full">
         <ul class="flex space-x-3 text-sm font-mono font-bold px-1 pt-2 -rotate-90 origin-top-left justify-center">
@@ -28,14 +50,14 @@
     <div class="flex bg-white h-60 w-[600px]">
         
         <div class="w-[430px] bg-tm text-lg">
-            <div class="grid grid-cols-3 font-mono uppercase text-zinc-800 text-center my-3 mx-4 py-1 border-y-[1px] border-zinc-800">
+            <div class="custom-grid font-mono uppercase text-zinc-800 text-center my-3 mx-4 py-1 border-y-[1px] border-zinc-800">
                 <p>{ date[0] }</p>
-                <p>{ date[1] }</p>
-                <p>{ date[2] }</p>
+                <p>{ date[1] } { date[2] }</p>
+                <p>{ date[3] }</p>
             </div>
             
             <p class="mt-4 text-3xl text-zinc-800 uppercase font-mono font-semibold m-2 text-center">{ artist }</p>
-            <p class="mt-4 text-xl uppercase text-center font-dosis font-normal">{ event }</p>
+            <p class="mt-4 text-lg uppercase text-center font-dosis font-normal">{ event }</p>
             <p class="mt-4 text-lg uppercase text-center font-mono underline underline-offset-8 decoration-zinc-800 decoration-[0.5px]">@{ venue }</p>
             <p class="text-lg uppercase text-center font-mono">{ city }, { country }</p>
 
@@ -55,7 +77,7 @@
 
                     <div class="text-center">
                         <p class="text-lg">ROW</p>
-                        <p class="text-3xl">{ row }</p>
+                        <p class="text-3xl uppercase">{ row }</p>
                     </div>
 
                     <QR
