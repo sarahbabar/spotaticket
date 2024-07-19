@@ -1,21 +1,31 @@
 export async function load({ fetch, data }) {
-    const artists = data.artists;
-    const artistsWithEvents = [];
-    // console.log(artists);
+    const longTermArtists = data.longTermArtists;
+    const mediumTermArtists = data.mediumTermArtists;
 
-    for (const artist of artists) {
-        
-        const eventData = await getEvents(artist.id, artist.name, fetch);
-        // console.log(JSON.stringify(eventData));
-        artistsWithEvents.push({...artist, eventData: eventData});
+    let key = 0;
+
+    async function getArtistsWithEvents(artistList: any) {
+        const artistsWithEvents = [];
+
+        for (const artist of artistList) {
+            const eventData = await getEvents(artist.id, artist.name, fetch);
+            // console.log(JSON.stringify(eventData));
+            artistsWithEvents.push({...artist, eventData: eventData, key: ++key});
+        }
+        return artistsWithEvents;
     }
-    // console.log(artistsWithEvents);
+
+    const [longTermArtistsEvents, mediumTermArtistsEvents] = await Promise.all([
+        getArtistsWithEvents(longTermArtists), 
+        getArtistsWithEvents(mediumTermArtists)
+    ]);
+
 
     return {
-        artists: artistsWithEvents,
+        longTermArtists: longTermArtistsEvents,
+        mediumTermArtists: mediumTermArtistsEvents,
         profile: data.profile,
         player: data.player,
-        // events: events
     };
 }
 
