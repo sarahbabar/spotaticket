@@ -70,6 +70,8 @@
     }) 
      // Logs the country code, e.g., 'US'
 
+     
+
 </script>
 
 <body class="bg-[#27232F] my-4">
@@ -82,7 +84,7 @@
         <label for="toggleTwo" class="flex items-center cursor-pointer select-none">
             <div class="relative mx-2 ">
                 <input type="checkbox" id="toggleTwo" class="peer sr-only" on:change={toggleArtists}/>
-                <div class="block h-12 rounded-full bg-[#4b4359] w-24 transition duration-300 ease-in-out  peer-checked:bg-amber-100"></div>
+                <div class="block h-12 rounded-full bg-[#4b4359] w-24 transition duration-300 ease-in-out peer-checked:bg-amber-100"></div>
         
                 <div class="font-mono text-xl font-bold absolute w-10 h-10 transition ease-in-out duration-500 bg-amber-100 rounded-full dot left-[5px] top-1 
                             peer-checked:translate-x-12 peer-checked:bg-[#4b4359] flex items-center justify-center text-[#4b4359] peer-checked:text-amber-100
@@ -99,19 +101,22 @@
 
     <div class="flex flex-col items-center">
         {#each showLongTerm ? longTermArtists : mediumTermArtists as artist (artist.key)}
+        <a href="{`/tickets/${artist.name}`}">
             <div in:fade|global={ {duration: 500} } class="grid grid-cols-2 text-amber-100 font-mono text-3xl">
                 <p class="text-right uppercase">{artist.name}</p>
         
-                {#if artist.eventData.length === 1}
-                    <p class="ml-8">{artist.eventData.length} Event</p>
+                {#if artist.eventData?.length === 1}
+                    <p class="ml-8">{artist.eventData.length} EVENT</p>
+                    
                 {:else}
-                    <p class="ml-8">{artist.eventData.length} Events</p>
+                    <p class="ml-8">{artist.eventData?.length} EVENTS</p>
                 {/if}
             </div>
+        </a>
             
-            <VirtualList itemHeight={264} height="600px" items={artist.eventData} let:item>
+            <!-- <VirtualList itemHeight={264} height="600px" items={artist.eventData} let:item> -->
                 <!-- this will be rendered for each currently visible item -->
-                <Ticket
+                <!-- <Ticket
                     artist={artist.name}
                     picture={artist.images[0].url}
                     event={item.name}
@@ -124,7 +129,7 @@
                     date={formatDate(item.date)}
                     code={435064}
                 /> 
-              </VirtualList>
+              </VirtualList> -->
         {/each}
     </div>
 </body>

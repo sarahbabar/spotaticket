@@ -15,7 +15,7 @@
 
 </script>
 
-<div in:fade|global={ {duration: 500} } class="group mx-8 my-6 flex flex-row shadow-lg items-center max-w-[840px] sepia-[0.3] transition duration-200 hover:scale-[1.02] hover:sepia-0">
+<div in:fade|global={ {duration: 500} } class="group mx-8 my-6 flex flex-row shadow-lg items-center max-w-[840px] sepia-[0.4] transition duration-200 hover:scale-[1.02] hover:sepia-0">
     <div class="w-60 h-60 relative">
         <img src={ picture } alt="artist img" class="object-cover w-full h-full grayscale group-hover:grayscale-0">
         <ul class="flex space-x-3 text-sm font-mono font-bold px-1 pt-2 -rotate-90 origin-top-left justify-center">

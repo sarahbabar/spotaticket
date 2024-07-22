@@ -1,31 +1,22 @@
-export async function load({ fetch, parent }) {
+export async function load({ fetch, params, parent }) {
 
+    const slug = params.artist;
     const { longTermArtists, mediumTermArtists, profile, player } = await parent();
+    const artist = decodeURIComponent(slug);
+
+    let artistInfo = longTermArtists.find((a: { name: string; }) => a.name === artist);
+    if(!artistInfo) {
+        artistInfo = mediumTermArtists.find((a: { name: string; }) => a.name === artist);
+    }
 
     let key = 0;
 
-    async function getArtistsWithEvents(artistList: any) {
-        const artistsWithEvents = [];
-
-        for (const artist of artistList) {
-            const eventData = await getEvents(artist.id, artist.name, fetch);
-            // console.log(JSON.stringify(eventData));
-            artistsWithEvents.push({...artist, eventData: eventData, key: ++key});
-        }
-        return artistsWithEvents;
-    }
-
-    const [longTermArtistsEvents, mediumTermArtistsEvents] = await Promise.all([
-        getArtistsWithEvents(longTermArtists), 
-        getArtistsWithEvents(mediumTermArtists)
-    ]);
-
+    const artistWithEvents = [];
+    const eventData = await getEvents(artistInfo.id, artistInfo.name, fetch);
+    artistWithEvents.push({...artistInfo, eventData: eventData, key: ++key});
 
     return {
-        longTermArtists: longTermArtistsEvents,
-        mediumTermArtists: mediumTermArtistsEvents,
-        profile: profile,
-        player: player,
+        artistWithEvents: artistWithEvents
     };
 }
 
