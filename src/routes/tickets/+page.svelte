@@ -7,7 +7,7 @@
     
     export let data;
     const { longTermArtists, mediumTermArtists, profile, player } = data;
-
+    console.log(player.item.name);
     let showLongTerm = true;
 
     function toggleArtists() {
@@ -55,26 +55,9 @@
         return [getDayName(date), monthNames[month], dateStr.concat(nthNumber(dateTime.getDate())), year];
     }
 
-
-    function getCountryCode() {
-    const language = navigator.language || navigator.language; // 'navigator.userLanguage' is for older IE versions
-    const parts = language.split('-');
-    const countryCode = parts[1] || 'default_country_code'; // You can set a default if no country code is found
-
-    return countryCode;
-    }
-
-    
-    onMount( () => {
-        console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
-    }) 
-     // Logs the country code, e.g., 'US'
-
-     
-
 </script>
 
-<body class="bg-[#27232F] my-4">
+<body in:fade|global={ {duration: 500} } class="bg-[#27232F] my-4">
 
     <div class="flex justify-center">
         <h1 class="text-5xl text-center font-mono font-bold text-amber-100 m-6">
@@ -101,37 +84,22 @@
 
     <div class="flex flex-col items-center">
         {#each showLongTerm ? longTermArtists : mediumTermArtists as artist (artist.key)}
-        <a href="{`/tickets/${artist.name}`}">
-            <div in:fade|global={ {duration: 500} } class="grid grid-cols-2 text-amber-100 font-mono text-3xl">
-                <p class="text-right uppercase">{artist.name}</p>
-        
-                {#if artist.eventData?.length === 1}
-                    <p class="ml-8">{artist.eventData.length} EVENT</p>
-                    
-                {:else}
-                    <p class="ml-8">{artist.eventData?.length} EVENTS</p>
-                {/if}
-            </div>
-        </a>
+            <a href="{`/tickets/${artist.name}`}">
+                <div in:fade|global={ {duration: 500} } class="grid grid-cols-2 text-amber-100 font-mono text-3xl">
+                    <p class="text-right ">{artist.name}</p>
             
-            <!-- <VirtualList itemHeight={264} height="600px" items={artist.eventData} let:item> -->
-                <!-- this will be rendered for each currently visible item -->
-                <!-- <Ticket
-                    artist={artist.name}
-                    picture={artist.images[0].url}
-                    event={item.name}
-                    city={item.city}
-                    country={item.country}
-                    venue={item.venue}
-                    link={item.url}
-                    seat={'25'}
-                    row={'M'}
-                    date={formatDate(item.date)}
-                    code={435064}
-                /> 
-              </VirtualList> -->
+                    {#if artist.eventData?.length === 1}
+                        <p class="ml-8">{artist.eventData.length} Event</p>
+                        
+                    {:else}
+                        <p class="ml-8">{artist.eventData?.length} Events</p>
+                    {/if}
+                </div>
+            </a>
         {/each}
     </div>
+
+    <!-- <p class="text-amber-100 font-mono text-lg">{player.item.name}</p> -->
 </body>
 
 

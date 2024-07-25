@@ -48,20 +48,39 @@
         return [getDayName(date), monthNames[month], dateStr.concat(nthNumber(dateTime.getDate())), year];
     }
 
-    const cities = [];
-
-    
+    let events = artistWithEvents[0].eventData
+    console.log(events);
     
     let showDrop = false;
     function toggleDropDown() {
         showDrop = !showDrop;
     }
 
+    let selectAll = true;
+    let cities: {[key: string]: boolean} = {};
+
+    for (const event of events) {
+        cities[event.city] = selectAll;
+    }
+
+    function toggleAll() {
+        selectAll = !selectAll;
+        for (const city in cities) {
+            cities[city] = selectAll;
+        }
+    }
+
+    function toggleCity(city: string) {
+        cities[city] = !cities[city];
+    }
+
+    $: filteredEvents = selectAll ? events: events.filter((event: any) => cities[event.city]);
+
 </script>
 
 <body in:fade|global={ {duration: 500} } class="bg-[#27232F] my-4">
     <div class="flex flex-col items-center">
-        <!-- Container for the arrow and the virtual list -->
+        
         <div class="flex flex-col w-full max-w-[950px] my-8">
             <!-- Arrow -->
             <div class="flex justify-between items-center mb-7">
@@ -77,58 +96,52 @@
                         <i class="fa-solid fa-caret-down text-[#27232F] ml-2"></i>
                     </button>
                         
-                    {#if showDrop === true }
+                    {#if showDrop}
                         <!-- Dropdown menu -->
                         <div in:fade|global={ {duration: 200} } out:fade|global={ {duration: 200} } id="dropdownBgHover" class="absolute right-0 mt-2 z-10 w-48 bg-[#4b4359] rounded-2xl shadow">
                             <ul class="p-3 space-y-1 text-sm text-amber-100" aria-labelledby="dropdownBgHoverButton">
 
-                                
                                 <li>
                                     <div class="flex items-center p-2 rounded">
-                                        <input id="checkbox-item-4" type="checkbox" value="" class="w-4 h-4 text-amber-100 rounded accent-[#27232F]">
-                                        <label for="checkbox-item-4" class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">Default checkbox</label>
+                                        <input checked id="checkbox-item-all" type="checkbox" value="" class="w-4 h-4 text-amber-100 rounded accent-[#27232F]" on:click={toggleAll}>
+                                        <label for="checkbox-item-all" class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">Select All</label>
                                     </div>
                                 </li>
-                                <li>
-                                    <div class="flex items-center p-2 rounded">
-                                        <input checked id="checkbox-item-5" type="checkbox" value="" class="w-4 h-4 text-amber-100 rounded accent-[#27232F]">
-                                        <label for="checkbox-item-5" class="w-full ms-2 text-sm font-mono text-amber-100 rounded">Checked state</label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="flex items-center p-2 rounded">
-                                        <input id="checkbox-item-6" type="checkbox" value="" class="w-4 h-4 text-amber-100 rounded accent-[#27232F]">
-                                        <label for="checkbox-item-6" class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">Default checkbox</label>
-                                    </div>
-                                </li>
+
+                                <div class="h-[110px] overflow-y-auto">
+                                    {#each Object.keys(cities) as city, index}
+                                        <li>
+                                            <div class="flex items-center p-2 rounded">
+                                                <input id={`checkbox-item-${index}`} disabled={selectAll} on:click={() => toggleCity(city)} bind:checked={cities[city]} type="checkbox" value={city} class="w-4 h-4 text-amber-100 rounded accent-[#27232F]">
+                                                <label for={`checkbox-item-${index}`} class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">{city}</label>
+                                            </div>
+                                        </li>
+                                    {/each}
+                                </div> 
+
                             </ul>
                         </div>
                     {/if}
 
                 </div>
                 
-                
-
-
-                
             </div>
-            <!-- Virtual List -->
+            
             <div class="mt-4">
-                <VirtualList itemHeight={264} height="870px" items={artistWithEvents[0].eventData} let:item> 
-                    
-                    <Ticket
-                        artist={artistWithEvents[0].name}
-                        picture={artistWithEvents[0].images[0].url}
-                        event={item.name}
-                        city={item.city}
-                        country={item.country}
-                        venue={item.venue}
-                        link={item.url}
-                        seat={'25'}
-                        row={'M'}
-                        date={formatDate(item.date)}
-                        code={435064}
-                    /> 
+                <VirtualList itemHeight={264} height="870px" items={filteredEvents} let:item > 
+                        <Ticket
+                            artist={artistWithEvents[0].name}
+                            picture={artistWithEvents[0].images[0].url}
+                            event={item.name}
+                            city={item.city}
+                            country={item.country}
+                            venue={item.venue}
+                            link={item.url}
+                            seat={'25'}
+                            row={'M'}
+                            date={formatDate(item.date)}
+                            code={435064}
+                        />            
                 </VirtualList>
             </div>
         </div>
