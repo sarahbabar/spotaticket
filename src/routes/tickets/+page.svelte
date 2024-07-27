@@ -62,6 +62,7 @@
         return (` ${amount} Events `).repeat(7);
     }
 
+
 </script>
 
 <body in:fade|global={ {duration: 500} } out:fade|global={ {duration: 200} } class="bg-[#27232F] my-4 flex flex-col items-center">

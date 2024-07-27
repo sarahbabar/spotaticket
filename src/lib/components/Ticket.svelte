@@ -8,7 +8,7 @@
     export let country: string;
     export let venue: string;
     export let link: string;
-    export let seat: string;
+    export let seat: number;
     export let row: string;
     export let date: string[];
     export let code: number;

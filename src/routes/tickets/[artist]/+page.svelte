@@ -48,6 +48,33 @@
         return [getDayName(date), monthNames[month], dateStr.concat(nthNumber(dateTime.getDate())), year];
     }
 
+    function randomIntFromID(id: string) {
+
+    // gen hash code from the string
+    let hash = hashCode(id);
+    
+    const min = 1;
+    const max = 26;
+    
+    let boundedRand = Math.abs(hash % (max - min + 1)) + min;
+    return boundedRand;
+    }
+
+    function hashCode(str: string) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = (hash << 5) - hash + str.charCodeAt(i);
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    }
+
+    let alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+
+    function rowLetter(index: number) {
+        return alphabet[(index - 1)];
+    }
+
     let events = artistWithEvents[0].eventData
     console.log(events);
     
@@ -137,8 +164,8 @@
                             country={item.country}
                             venue={item.venue}
                             link={item.url}
-                            seat={'25'}
-                            row={'M'}
+                            seat={randomIntFromID((item.event_id).concat(item.artist_id))}
+                            row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
                             date={formatDate(item.date)}
                             code={435064}
                         />            
