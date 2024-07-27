@@ -7,7 +7,7 @@
     
     export let data;
     const { longTermArtists, mediumTermArtists, profile, player } = data;
-    console.log(player.item.name);
+    
     let showLongTerm = true;
 
     function toggleArtists() {
@@ -55,17 +55,26 @@
         return [getDayName(date), monthNames[month], dateStr.concat(nthNumber(dateTime.getDate())), year];
     }
 
+    function formatEvent(amount: number) {
+        if (amount === 1) {
+            return (` ${amount} Event`).repeat(7);
+        }
+        return (` ${amount} Events `).repeat(7);
+    }
+
 </script>
 
-<body in:fade|global={ {duration: 500} } class="bg-[#27232F] my-4">
+<body in:fade|global={ {duration: 500} } out:fade|global={ {duration: 200} } class="bg-[#27232F] my-4 flex flex-col items-center">
 
-    <div class="flex justify-center">
-        <h1 class="text-5xl text-center font-mono font-bold text-amber-100 m-6">
-            {profile.display_name}'S TOP ARTISTS
+    <div class="flex flex-col justify-center items-center lg:flex-row mb-5">
+        <h1 class="text-3xl text-center font-mono font-bold text-amber-100 m-7 md:text-5xl">
+            <p class="uppercase">{profile.display_name}'S</p>
+            <p>TOP ARTISTS</p>
+            
         </h1>
         
         <label for="toggleTwo" class="flex items-center cursor-pointer select-none">
-            <div class="relative mx-2 ">
+            <div class="relative mx-2">
                 <input type="checkbox" id="toggleTwo" class="peer sr-only" on:change={toggleArtists}/>
                 <div class="block h-12 rounded-full bg-[#4b4359] w-24 transition duration-300 ease-in-out peer-checked:bg-amber-100"></div>
         
@@ -80,26 +89,90 @@
 
     </div>
 
-<!-- <p>{player.item.name}</p> -->
+    <div class="flex justify-center items-center min-h-screen">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl w-full">
+            {#each showLongTerm ? longTermArtists : mediumTermArtists as artist, index (artist.key)}
+                <a href="{`/tickets/${artist.name}`}">
 
-    <div class="flex flex-col items-center">
-        {#each showLongTerm ? longTermArtists : mediumTermArtists as artist (artist.key)}
-            <a href="{`/tickets/${artist.name}`}">
-                <div in:fade|global={ {duration: 500} } class="grid grid-cols-2 text-amber-100 font-mono text-3xl">
-                    <p class="text-right ">{artist.name}</p>
-            
-                    {#if artist.eventData?.length === 1}
-                        <p class="ml-8">{artist.eventData.length} Event</p>
-                        
-                    {:else}
-                        <p class="ml-8">{artist.eventData?.length} Events</p>
-                    {/if}
-                </div>
-            </a>
-        {/each}
+                    <div class="">
+
+                    </div>
+
+
+                    
+                    <div in:fade|global={ {duration: 500} } class={`transition-transform duration-300 ease-in-out ${((Math.floor(index / 2) + index) % 2 === 0) ? "-rotate-6 hover:rotate-0" : "rotate-6 hover:rotate-0"}`}>
+                        <a href="{`/tickets/${artist.name}`}">
+                        <div style="box-shadow:  0px 0px 35px 7px rgba(250, 234, 172, .2);" class="w-60 h-[310px] bg-[#fffef8] flex flex-col items-center pt-2 mx-10 my-10 sepia-[0.4]">
+                            <img class="w-56 h-56 object-cover grayscale shadow-sm shadow-zinc-800/50" src={artist.images[0].url} alt="" />
+                            <div class="p-3 w-full text-center">
+                                <h2 class="mb-1 text-base font-mono font-bold text-zinc-800 uppercase">{artist.name}</h2>
+                                <article class="mt-[6px]">
+
+                                    <h2 class="example-left font-mono">{formatEvent(artist.eventData.length)} </h2>
+                                    
+                                </article>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+
+                </a>
+            {/each}
+        </div>
     </div>
-
-    <!-- <p class="text-amber-100 font-mono text-lg">{player.item.name}</p> -->
 </body>
 
+<style lang="postcss">
+    article {
+        max-width: 240px;
+        overflow: hidden;
+        position: relative;
+        min-height: 25px;
+    }
 
+    .example-left {
+        white-space: nowrap;
+        position: absolute;
+        top: 0;
+        right: 0;
+        text-transform: uppercase;
+    }
+
+    .example-left {
+        -webkit-animation: mymove 8s linear infinite; 
+        white-space: nowrap;
+        animation: mymove 8s linear infinite alternate;
+    }
+
+    @-webkit-keyframes mymove {
+        from {
+            right: 0;
+        }
+        to {
+            right: -140px;
+        }
+    }
+
+    @keyframes mymove {
+        from {
+            right: 0;
+        }
+        to {
+            right: -140px;
+        }
+    }
+
+
+
+    @keyframes early 
+    { from { opacity:1; } to { opacity:0; } }
+
+    .early {
+        animation:fadeIn ease-in 1; /* call our keyframe named fadeIn, use animation ease-in and repeat it only 1 time */
+
+        animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+
+        animation-duration:1s;
+        animation-delay: 1.5s
+    }
+</style>

@@ -59,16 +59,7 @@
                         <p class="text-3xl uppercase">{ row }</p>
                     </div>
 
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={link}" width="75" height="75">
-                    <!-- <QR
-                        class=""
-                        data={ link }
-                        moduleFill="black"
-                        anchorOuterFill="black"
-                        anchorInnerFill="black"
-                        width="75"
-                        height="75"
-                    /> -->
+                    <img alt="qrcode" src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={link}" width="75" height="75">
                     <div class="text-center">
                         <p class="text-lg">SEAT</p>
                         <p class="text-3xl">{ seat }</p>
@@ -86,13 +77,13 @@
 </div>
 
 <style lang="postcss">
-    .custom-borders {
+    /* .custom-borders {
         border-left-width: 2px;
         border-left-style: dashed;
         border-right-width: 10px;
         border-right-style: dotted;
         border-right-color: slategray;
-    }
+    } */
     .box {
         --mask: radial-gradient(4px at right,#ffffff00 97%,#ffffff) 50%/ 100% 13px;
         -webkit-mask: var(--mask);
@@ -105,10 +96,11 @@
         align-items: center; /* Align the items vertically at the center of their cells */
     }
 
-    .text-hide {
+    /* .text-hide {
         text-overflow: ".";
         overflow: hidden;
         white-space: nowrap;  
-    }
+    } */
+
 
 </style>
