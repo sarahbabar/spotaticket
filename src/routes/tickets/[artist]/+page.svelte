@@ -48,16 +48,41 @@
         return [getDayName(date), monthNames[month], dateStr.concat(nthNumber(dateTime.getDate())), year];
     }
 
-    function randomIntFromID(id: string) {
+    let alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
-    // gen hash code from the string
-    let hash = hashCode(id);
-    
-    const min = 1;
-    const max = 26;
-    
-    let boundedRand = Math.abs(hash % (max - min + 1)) + min;
-    return boundedRand;
+    function randomCode(id: string, city: string, day: string) {
+        let codeArr = [];
+
+        const idArr = (id.split("")).reverse();
+        const cityArr = city.split("");
+        const dayArr = (day.split("")).slice(0, 3);
+
+        for (const char of dayArr) {
+                codeArr.push(Math.floor(alphabet.indexOf(char.toLocaleLowerCase()) % 10))
+        }
+
+        for (let i = 0; i < idArr.length; i++) {
+            if (alphabet.includes(idArr[i].toLowerCase())) {
+                codeArr.push(Math.floor(alphabet.indexOf(idArr[i].toLocaleLowerCase()) % 10));
+            }
+
+            if (i < cityArr.length) {
+                codeArr.push(Math.floor(alphabet.indexOf(cityArr[i].toLocaleLowerCase()) % 10))
+            }
+        }
+        const codeStr = (codeArr.slice(0, 6)).join("");
+        return codeStr;
+    }
+
+    function randomIntFromID(id: string) {
+        // gen hash code from the string
+        let hash = hashCode(id);
+        
+        const min = 1;
+        const max = 26;
+        
+        let boundedRand = Math.abs(hash % (max - min + 1)) + min;
+        return boundedRand;
     }
 
     function hashCode(str: string) {
@@ -68,8 +93,6 @@
         }
         return hash;
     }
-
-    let alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
     function rowLetter(index: number) {
         return alphabet[(index - 1)];
@@ -155,7 +178,7 @@
             </div>
             
             <div class="mt-4">
-                <VirtualList itemHeight={264} height="870px" items={filteredEvents} let:item > 
+                <VirtualList  height="870px" items={filteredEvents} let:item > 
                         <Ticket
                             artist={artistWithEvents[0].name}
                             picture={artistWithEvents[0].images[0].url}
@@ -167,10 +190,10 @@
                             seat={randomIntFromID((item.event_id).concat(item.artist_id))}
                             row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
                             date={formatDate(item.date)}
-                            code={435064}
+                            code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
                         />            
-                </VirtualList>
-            </div>
+                </VirtualList> 
+            </div> 
         </div>
     </div>
 </body>
