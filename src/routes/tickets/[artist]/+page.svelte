@@ -1,5 +1,6 @@
 <script lang="ts">
-    import Ticket from '$lib/components/Ticket.svelte';
+    import HorizontalTicket from '$lib/components/HorizontalTicket.svelte';
+	import VerticalTicket from '$lib/components/VerticalTicket.svelte';
     //@ts-ignore
     import VirtualList from '@sveltejs/svelte-virtual-list';
 	import { fade } from 'svelte/transition';
@@ -45,7 +46,7 @@
         const dateTime = new Date(date.concat(" 00:00:00"));
         const dateStr = "" + dateTime.getDate();
     
-        return [getDayName(date), monthNames[month], dateStr.concat(nthNumber(dateTime.getDate())), year];
+        return [getDayName(date), monthNames[month], dateStr.concat(nthNumber(dateTime.getDate())), year, dateStr];
     }
 
     let alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -128,7 +129,7 @@
 
 </script>
 
-<body in:fade|global={ {duration: 500} } class="bg-[#27232F] my-4">
+<body in:fade|global={ {duration: 500} } class="bg-[#27232F] my-4 flex flex-col items-center">
     <div class="flex flex-col items-center">
         
         <div class="flex flex-col w-full max-w-[950px] my-8">
@@ -139,7 +140,7 @@
                 </a>
 
 
-                <div class="relative inline-block text-left">
+                <div class="relative inline-block text-left mb-2">
                     <button id="dropdownBgHoverButton" data-dropdown-toggle="dropdownBgHover" class="text-[#27232F] bg-amber-100 font-mono rounded-full text-base font-bold px-5 py-2.5 text-center inline-flex items-center" type="button" on:click={toggleDropDown}>
                         <i class="fa-solid fa-earth-americas text-[#27232F] mr-2"></i>
                         Location 
@@ -177,27 +178,43 @@
                 
             </div>
             
-            <div class="mt-4">
-                <VirtualList  height="870px" items={filteredEvents} let:item > 
-                        <Ticket
-                            artist={artistWithEvents[0].name}
-                            picture={artistWithEvents[0].images[0].url}
-                            event={item.name}
-                            city={item.city}
-                            country={item.country}
-                            venue={item.venue}
-                            link={item.url}
-                            seat={randomIntFromID((item.event_id).concat(item.artist_id))}
-                            row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
-                            date={formatDate(item.date)}
-                            code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
-                        />            
-                </VirtualList> 
+            <div class="">
+                <div class="hidden lg:block">
+                    <VirtualList  height="870px" items={filteredEvents} let:item> 
+                            <HorizontalTicket
+                                artist={artistWithEvents[0].name}
+                                picture={artistWithEvents[0].images[0].url}
+                                event={item.name}
+                                city={item.city}
+                                country={item.country}
+                                venue={item.venue}
+                                link={item.url}
+                                seat={randomIntFromID((item.event_id).concat(item.artist_id))}
+                                row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
+                                date={formatDate(item.date)}
+                                code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
+                            />            
+                    </VirtualList> 
+                </div>
+
+                <div class="block lg:hidden">
+                    <VirtualList height="700px" items={filteredEvents} let:item>  
+                        <VerticalTicket
+                                artist={artistWithEvents[0].name}
+                                picture={artistWithEvents[0].images[0].url}
+                                event={item.name}
+                                city={item.city}
+                                country={item.country}
+                                venue={item.venue}
+                                link={item.url}
+                                seat={randomIntFromID((item.event_id).concat(item.artist_id))}
+                                row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
+                                date={formatDate(item.date)}
+                                code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
+                            />   
+                    </VirtualList> 
+                </div>
             </div> 
         </div>
     </div>
 </body>
-
-<style lang="postcss">
-
-</style>

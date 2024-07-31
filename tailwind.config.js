@@ -10,7 +10,8 @@ export default {
       },
       fontFamily: {
         'alata': ['Alata', 'sans-serif'],
-        'dosis': ['Dosis', 'sans-serif']
+        'dosis': ['Dosis', 'sans-serif'],
+        'libre': ['"Libre Barcode 39"', 'serif'],
       }
     }
   },

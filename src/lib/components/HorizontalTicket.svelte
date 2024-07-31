@@ -11,11 +11,22 @@
     export let seat: number;
     export let row: string;
     export let date: string[];
-    export let code: number;
+    export let code: string;
+
+    function shortenString(inputStr: string) {
+        if (inputStr.length <= 37) {
+            return inputStr;
+        }
+        let words = inputStr.split(' ');
+        while (words.join(' ').length > 37) {
+            words.pop();
+        }
+        return words.join(' ');
+    }
 
 </script>
 
-<div in:fade|global={ {duration: 500} } class="group mx-8 my-6 flex flex-row shadow-lg items-center max-w-[840px] sepia-[0.4] transition duration-200 hover:scale-[1.02] hover:sepia-0">
+<div in:fade|global={ {duration: 500} } class="group mx-10 my-6 flex flex-row shadow-lg items-center max-w-[840px] sepia-[0.4] transition duration-200 hover:scale-[1.02] hover:sepia-0">
     <div class="w-60 h-60 relative">
         <img src={ picture } alt="artist img" class="object-cover w-full h-full grayscale group-hover:grayscale-0">
         <ul class="flex space-x-3 text-sm font-mono font-bold px-1 pt-2 -rotate-90 origin-top-left justify-center">
@@ -36,9 +47,9 @@
             </div>
             
             <p class="mt-4 text-3xl text-zinc-800 uppercase font-mono font-semibold m-2 text-center">{ artist }</p>
-            <p class="mt-4 text-lg uppercase text-center font-dosis font-normal">{ event }</p>
-            <p class="mt-4 text-lg uppercase text-center font-mono underline underline-offset-8 decoration-zinc-800 decoration-[0.5px] mx-4">@{ venue }</p>
-            <p class="text-lg uppercase text-center font-mono">{ city }, { country }</p>
+            <p class="mt-2.5 text-lg uppercase text-center font-dosis font-normal mx-2">{ event }</p>
+            <p class="mt-2.5 text-lg uppercase text-center font-mono underline underline-offset-8 decoration-zinc-800 decoration-[0.5px] mx-4 line">@{ shortenString(venue) }</p>
+            <p class="text-lg uppercase text-center font-mono mb-2">{ city }, { country }</p>
 
         </div>
 
@@ -50,7 +61,7 @@
                 <li class="text-zinc-800/50">ADMIT ONE</li> 
              </ul>
 
-             <div class="absolute inset-0 w-full left-20 -rotate-90">
+             <div class="absolute inset-0 w-full left-[85px] -rotate-90">
                 
                 <div class="flex space-x-6 font-dosis items-center justify-center">
 

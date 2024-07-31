@@ -46,7 +46,7 @@ export async function load({ cookies }) {
 
 async function getTopArtists(accessToken: string, timeRange: string): Promise<any> {
 
-    const artistURL = `https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=10&offset=0`;
+    const artistURL = `https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=12&offset=0`;
 
     const response = await fetch(artistURL, {
         headers: {
