@@ -39,7 +39,7 @@
     
     <div class="flex bg-[#fffef8] h-60 w-[600px]">
         
-        <div class="w-[430px] bg-tm text-lg">
+        <div class="w-[430px] text-lg">
             <div class="custom-grid font-mono uppercase text-zinc-800 text-center my-3 mx-4 py-1 border-y-[1px] border-zinc-800">
                 <p>{ date[0] }</p>
                 <p>{ date[1] } { date[2] }</p>

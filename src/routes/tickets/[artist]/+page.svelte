@@ -100,7 +100,7 @@
     }
 
     let events = artistWithEvents[0].eventData
-    console.log(events);
+    // console.log(events);
     
     let showDrop = false;
     function toggleDropDown() {
