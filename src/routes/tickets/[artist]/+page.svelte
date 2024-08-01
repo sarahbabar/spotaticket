@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { clickOutside } from '$lib/ClickOutside.js';
     import HorizontalTicket from '$lib/components/HorizontalTicket.svelte';
 	import VerticalTicket from '$lib/components/VerticalTicket.svelte';
     //@ts-ignore
@@ -90,7 +91,7 @@
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
             hash = (hash << 5) - hash + str.charCodeAt(i);
-            hash |= 0; // Convert to 32bit integer
+            hash |= 0; 
         }
         return hash;
     }
@@ -99,7 +100,7 @@
         return alphabet[(index - 1)];
     }
 
-    let events = artistWithEvents[0].eventData
+    const events = artistWithEvents.eventData
     // console.log(events);
     
     let showDrop = false;
@@ -127,94 +128,148 @@
 
     $: filteredEvents = selectAll ? events: events.filter((event: any) => cities[event.city]);
 
+    function horizontalScroll(node: any){
+    function handleWheelEvent(e: any) {
+      e.preventDefault();
+      node.scrollLeft += e.deltaY;
+    }
+
+    node.addEventListener('wheel', handleWheelEvent);
+    return {
+      destroy() {
+        node.removeEventListener('wheel', handleWheelEvent)
+      }
+    };
+  }
+
 </script>
 
 <body in:fade|global={ {duration: 500} } class="bg-[#27232F] my-4 flex flex-col items-center">
-    <div class="flex flex-col items-center">
-        
-        <div class="flex flex-col w-full max-w-[950px] my-8">
-            <!-- Arrow -->
-            <div class="flex justify-between items-center mb-7">
-                <a href="/tickets">
-                    <i class="text-4xl fa-solid fa-arrow-left text-amber-100"></i>
-                </a>
 
+    {#if events.length > 0}
+        <div class="flex flex-col items-center">
+            
+            <div class="flex flex-col w-full max-w-[950px] my-8">
+                <!-- Arrow -->
+                <div class="flex justify-between items-center mb-7">
+                    <a href="/tickets" class="star">
+                        <i class="text-4xl fa-solid fa-arrow-left text-amber-100"></i>
+                    </a>
+                    
+                    <div class="relative inline-block text-left mb-2">
+                        <button id="dropdownBgHoverButton" data-dropdown-toggle="dropdownBgHover" class="text-[#27232F] bg-amber-100 font-mono rounded-full text-base font-bold px-5 py-2.5 text-center inline-flex items-center" type="button" on:click={toggleDropDown}>
+                            <i class="fa-solid fa-earth-americas text-[#27232F] mr-2"></i>
+                            Location 
+                            <i class="fa-solid fa-caret-down text-[#27232F] ml-2"></i>
+                        </button>
+                            
+                        {#if showDrop}
+                            <!-- Dropdown menu -->
+                            
+                            <!-- on:click_outside = {() => showDrop = false} -->
+                            <div use:clickOutside in:fade|global={ {duration: 200} } out:fade|global={ {duration: 200} } id="dropdownBgHover" class="absolute right-0 mt-2 z-10 w-48 bg-[#4b4359] rounded-2xl shadow">
+                                <ul class="p-3 space-y-1 text-sm text-amber-100" aria-labelledby="dropdownBgHoverButton">
 
-                <div class="relative inline-block text-left mb-2">
-                    <button id="dropdownBgHoverButton" data-dropdown-toggle="dropdownBgHover" class="text-[#27232F] bg-amber-100 font-mono rounded-full text-base font-bold px-5 py-2.5 text-center inline-flex items-center" type="button" on:click={toggleDropDown}>
-                        <i class="fa-solid fa-earth-americas text-[#27232F] mr-2"></i>
-                        Location 
-                        <i class="fa-solid fa-caret-down text-[#27232F] ml-2"></i>
-                    </button>
-                        
-                    {#if showDrop}
-                        <!-- Dropdown menu -->
-                        <div in:fade|global={ {duration: 200} } out:fade|global={ {duration: 200} } id="dropdownBgHover" class="absolute right-0 mt-2 z-10 w-48 bg-[#4b4359] rounded-2xl shadow">
-                            <ul class="p-3 space-y-1 text-sm text-amber-100" aria-labelledby="dropdownBgHoverButton">
+                                    <li>
+                                        <div class="flex items-center -mb-1 p-2 rounded">
+                                            <input id="checkbox-item-all" type="checkbox" value="" class="w-4 h-4 text-amber-100 rounded accent-[#27232F]" bind:checked={selectAll} on:click={toggleAll}>
+                                            <label for="checkbox-item-all" class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">Select All</label>
+                                        </div>
+                                    </li>
 
-                                <li>
-                                    <div class="flex items-center p-2 rounded">
-                                        <input checked id="checkbox-item-all" type="checkbox" value="" class="w-4 h-4 text-amber-100 rounded accent-[#27232F]" on:click={toggleAll}>
-                                        <label for="checkbox-item-all" class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">Select All</label>
-                                    </div>
-                                </li>
+                                    <div class="h-[110px] overflow-y-auto">
+                                        {#each Object.keys(cities) as city, index}
+                                            <li>
+                                                <div class="flex items-center p-2 rounded">
+                                                    <input id={`checkbox-item-${index}`} disabled={selectAll} on:click={() => toggleCity(city)} bind:checked={cities[city]} type="checkbox" value={city} class="w-4 h-4 text-amber-100 rounded accent-[#27232F]">
+                                                    <label for={`checkbox-item-${index}`} class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">{city}</label>
+                                                </div>
+                                            </li>
+                                        {/each}
+                                    </div> 
 
-                                <div class="h-[110px] overflow-y-auto">
-                                    {#each Object.keys(cities) as city, index}
-                                        <li>
-                                            <div class="flex items-center p-2 rounded">
-                                                <input id={`checkbox-item-${index}`} disabled={selectAll} on:click={() => toggleCity(city)} bind:checked={cities[city]} type="checkbox" value={city} class="w-4 h-4 text-amber-100 rounded accent-[#27232F]">
-                                                <label for={`checkbox-item-${index}`} class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">{city}</label>
-                                            </div>
-                                        </li>
-                                    {/each}
-                                </div> 
+                                </ul>
+                            </div>
+                        {/if}
 
-                            </ul>
-                        </div>
-                    {/if}
-
+                    </div>
+                    
                 </div>
                 
-            </div>
-            
-            <div class="">
-                <div class="hidden lg:block">
-                    <VirtualList  height="870px" items={filteredEvents} let:item> 
-                            <HorizontalTicket
-                                artist={artistWithEvents[0].name}
-                                picture={artistWithEvents[0].images[0].url}
-                                event={item.name}
-                                city={item.city}
-                                country={item.country}
-                                venue={item.venue}
-                                link={item.url}
-                                seat={randomIntFromID((item.event_id).concat(item.artist_id))}
-                                row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
-                                date={formatDate(item.date)}
-                                code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
-                            />            
-                    </VirtualList> 
-                </div>
+                <div class="">
+                    <div class="hidden lg:block">
+                        {#if filteredEvents.length === 0}
+                            <div class="w-[840px] mx-10">
 
-                <div class="block lg:hidden">
-                    <VirtualList height="700px" items={filteredEvents} let:item>  
-                        <VerticalTicket
-                                artist={artistWithEvents[0].name}
-                                picture={artistWithEvents[0].images[0].url}
-                                event={item.name}
-                                city={item.city}
-                                country={item.country}
-                                venue={item.venue}
-                                link={item.url}
-                                seat={randomIntFromID((item.event_id).concat(item.artist_id))}
-                                row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
-                                date={formatDate(item.date)}
-                                code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
-                            />   
-                    </VirtualList> 
-                </div>
-            </div> 
+                            </div>
+                            
+                        {:else}
+                            <VirtualList  height="870px" items={filteredEvents} let:item> 
+                                <HorizontalTicket
+                                    artist={artistWithEvents.name}
+                                    picture={artistWithEvents.images[0].url}
+                                    event={item.name}
+                                    city={item.city}
+                                    country={item.country}
+                                    venue={item.venue}
+                                    link={item.url}
+                                    seat={randomIntFromID((item.event_id).concat(item.artist_id))}
+                                    row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
+                                    date={formatDate(item.date)}
+                                    code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
+                                />            
+                            </VirtualList> 
+                        {/if}
+
+                    
+                    </div>
+
+                    <div class="block lg:hidden">
+                        <!-- <VirtualList height="700px" items={filteredEvents} let:item>  
+                            <VerticalTicket
+                                    artist={artistWithEvents[0].name}
+                                    picture={artistWithEvents[0].images[0].url}
+                                    event={item.name}
+                                    city={item.city}
+                                    country={item.country}
+                                    venue={item.venue}
+                                    link={item.url}
+                                    seat={randomIntFromID((item.event_id).concat(item.artist_id))}
+                                    row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
+                                    date={formatDate(item.date)}
+                                    code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
+                                />   
+                        </VirtualList>  -->
+
+                        <div use:horizontalScroll class="flex w-80 overflow-x-auto scrollbar scrollbar-thin">  
+                            {#each filteredEvents as item}
+                                <VerticalTicket
+                                    artist={artistWithEvents.name}
+                                    picture={artistWithEvents.images[0].url}
+                                    event={item.name}
+                                    city={item.city}
+                                    country={item.country}
+                                    venue={item.venue}
+                                    link={item.url}
+                                    seat={randomIntFromID((item.event_id).concat(item.artist_id))}
+                                    row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
+                                    date={formatDate(item.date)}
+                                    code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
+                                />   
+                            {/each} 
+                        </div> 
+                    </div>
+                </div> 
+            </div>
         </div>
-    </div>
+
+    {:else}
+        <div class="text-3xl text-amber-100 font-mono">
+            <p>Could not find events for this artist ;-; </p>
+        </div>
+    {/if}
 </body>
+
+<style lang="postcss">
+
+</style>

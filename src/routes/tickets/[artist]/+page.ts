@@ -5,15 +5,16 @@ export async function load({ fetch, params, parent }) {
     const artist = decodeURIComponent(slug);
 
     let artistInfo = longTermArtists.find((a: { name: string; }) => a.name === artist);
-    if(!artistInfo) {
+    if (!artistInfo) {
         artistInfo = mediumTermArtists.find((a: { name: string; }) => a.name === artist);
     }
+    
+    if (!artistInfo) {
+        return { artistWithEvents: {id: "", name: artist, eventData: []} };
+    }
 
-    let key = 0;
-
-    const artistWithEvents = [];
     const eventData = await getEvents(artistInfo.id, artistInfo.name, fetch);
-    artistWithEvents.push({...artistInfo, eventData: eventData, key: ++key});
+    const artistWithEvents = {...artistInfo, eventData: eventData};
 
     return {
         artistWithEvents: artistWithEvents

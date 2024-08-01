@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fade } from "svelte/transition";
+	import { fade, slide, blur, fly, scale, draw, crossfade } from 'svelte/transition';
 
     export let artist: string;
     export let eventDataLen: number;
@@ -53,9 +53,9 @@
     
 </script>
 
-<div in:fade|global={ {duration: 500} } class={`transition-transform duration-500 ease-in-out ${getRotationClass(index)} hover:rotate-0`}>
-                        
-    <div style="box-shadow:  0px 0px 35px 7px rgba(250, 234, 172, .2);" class="star w-60 h-[310px] bg-[#fffef8] flex flex-col items-center pt-2 mx-10 my-10 sepia-[0.4]">
+<div in:fly|global={ {duration: 500, y:getRandomInt(-100, 100), x:getRandomInt(-100, 100)} } class={`transition-transform duration-500 ease-in-out ${getRotationClass(index)} hover:rotate-0`}>
+    
+    <div style="box-shadow:  0px 0px 35px 7px rgba(250, 234, 172, .2);" class="w-60 h-[310px] bg-[#fffef8] flex flex-col items-center pt-2 mx-10 my-10 sepia-[0.4]">
         {#if artist === "Tame Impala"}
             <img class="w-56 h-56 object-cover grayscale shadow-sm shadow-zinc-800/50" src="https://thissongissick.com/wp-content/uploads/2019/12/tame-impala-kevin-parker-lowlands-festival-2019-credit-ben-houdijk-shutterstock-1483006730@1400x1050.jpg" alt="" />
         {:else}

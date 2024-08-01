@@ -15,7 +15,7 @@
 
 </script>
 
-<div in:fade|global={ {duration: 500} } class="flex flex-col items-center mb-10 mt-7 mx-12 md:mx-28 grayscale sepia-[0.4]">
+<div in:fade|global={ {duration: 500} } out:fade|global={ {duration: 300} } class="flex flex-col items-center mb-6 mt-2 mx-10 md:mt-10 md:mb-10 grayscale sepia-[0.4]">
 
     <div class="flex flex-col items-center w-60 h-[450px] bg-[#fffef8] relative">
         
@@ -29,8 +29,8 @@
             <p class="mb-0.5 -mt-1">{ date[3] }</p>
         </div>
 
-        <div class="absolute left-1 top-56 mt-3 mb-1 mx-2 rotate-90 origin-left">
-            <p class="text-center font-mono tracking-[0.3em] text-sm uppercase">general admission</p>
+        <div class="absolute left-1 top-[233px] mt-3 mb-1 mx-2 rotate-90 origin-left">
+            <p class="text-center font-mono tracking-[0.2em] text-sm uppercase">general admission</p>
         </div>
 
         <div class="w-52 mr-1 ml-6 p-1 flex flex-col my-3">
@@ -92,12 +92,11 @@
     }
     
 
-
     .slanted-edge {
         --p: 55px; /* control the shape (can be percentage) */
         height: 240px;
         aspect-ratio: 1;
-        clip-path: polygon(0 0,100% 0,100% calc(100% - var(--p)),0 100%);
+        clip-path: polygon(0 0,101% 0,101% calc(100% - var(--p)),0 100%);
     }
 
 

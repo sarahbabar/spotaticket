@@ -25,4 +25,15 @@
     :global(::-webkit-scrollbar-thumb:hover) {
         @apply bg-amber-100/70;
     }
+
+    :global(.star) {
+        cursor: url("star_cursor_yellow.svg") 12 12, auto;
+    } 
+
+    :global(html) {
+        cursor: url('star_cursor.svg') 12 12, auto;
+    }
+    :global(.apple) {
+        cursor: url("apple.svg") 12 12, auto;
+    }
 </style>
