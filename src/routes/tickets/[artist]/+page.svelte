@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { clickOutside } from '$lib/ClickOutside.js';
+	import ClickOutside from '$lib/components/ClickOutside.svelte';
     import HorizontalTicket from '$lib/components/HorizontalTicket.svelte';
 	import VerticalTicket from '$lib/components/VerticalTicket.svelte';
     //@ts-ignore
@@ -156,43 +156,46 @@
                         <i class="text-4xl fa-solid fa-arrow-left text-amber-100"></i>
                     </a>
                     
-                    <div class="relative inline-block text-left mb-2">
-                        <button id="dropdownBgHoverButton" data-dropdown-toggle="dropdownBgHover" class="text-[#27232F] bg-amber-100 font-mono rounded-full text-base font-bold px-5 py-2.5 text-center inline-flex items-center" type="button" on:click={toggleDropDown}>
-                            <i class="fa-solid fa-earth-americas text-[#27232F] mr-2"></i>
-                            Location 
-                            <i class="fa-solid fa-caret-down text-[#27232F] ml-2"></i>
-                        </button>
-                            
-                        {#if showDrop}
-                            <!-- Dropdown menu -->
-                            
-                            <!-- on:click_outside = {() => showDrop = false} -->
-                            <div use:clickOutside in:fade|global={ {duration: 200} } out:fade|global={ {duration: 200} } id="dropdownBgHover" class="absolute right-0 mt-2 z-10 w-48 bg-[#4b4359] rounded-2xl shadow">
-                                <ul class="p-3 space-y-1 text-sm text-amber-100" aria-labelledby="dropdownBgHoverButton">
+                    <ClickOutside on:clickoutside={() => console.log("meow")}>
+                        
+                     
+                        <div class="relative inline-block text-left mb-2">
+                            <button id="dropdownBgHoverButton" data-dropdown-toggle="dropdownBgHover" class="text-[#27232F] bg-amber-100 font-mono rounded-full text-base font-bold px-5 py-2.5 text-center inline-flex items-center" type="button" on:click={toggleDropDown}>
+                                <i class="fa-solid fa-earth-americas text-[#27232F] mr-2"></i>
+                                Location 
+                                <i class="fa-solid fa-caret-down text-[#27232F] ml-2"></i>
+                            </button>
+                                
+                            {#if showDrop}
+                                <!-- Dropdown menu -->
+                                <div in:fade|global={ {duration: 200} } out:fade|global={ {duration: 200} } id="dropdownBgHover" class="absolute right-0 mt-2 z-10 w-48 bg-[#4b4359] rounded-2xl shadow">
+                                    <ul class="p-3 space-y-1 text-sm text-amber-100" aria-labelledby="dropdownBgHoverButton">
 
-                                    <li>
-                                        <div class="flex items-center -mb-1 p-2 rounded">
-                                            <input id="checkbox-item-all" type="checkbox" value="" class="w-4 h-4 text-amber-100 rounded accent-[#27232F]" bind:checked={selectAll} on:click={toggleAll}>
-                                            <label for="checkbox-item-all" class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">Select All</label>
-                                        </div>
-                                    </li>
+                                        <li>
+                                            <div class="flex items-center -mb-1 p-2 rounded">
+                                                <input id="checkbox-item-all" type="checkbox" value="" class="w-4 h-4 text-amber-100 rounded accent-[#27232F]" bind:checked={selectAll} on:click={toggleAll}>
+                                                <label for="checkbox-item-all" class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">Select All</label>
+                                            </div>
+                                        </li>
 
-                                    <div class="h-[110px] overflow-y-auto">
-                                        {#each Object.keys(cities) as city, index}
-                                            <li>
-                                                <div class="flex items-center p-2 rounded">
-                                                    <input id={`checkbox-item-${index}`} disabled={selectAll} on:click={() => toggleCity(city)} bind:checked={cities[city]} type="checkbox" value={city} class="w-4 h-4 text-amber-100 rounded accent-[#27232F]">
-                                                    <label for={`checkbox-item-${index}`} class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">{city}</label>
-                                                </div>
-                                            </li>
-                                        {/each}
-                                    </div> 
+                                        <div class="h-[110px] overflow-y-auto">
+                                            {#each Object.keys(cities) as city, index}
+                                                <li>
+                                                    <div class="flex items-center p-2 rounded">
+                                                        <input id={`checkbox-item-${index}`} disabled={selectAll} on:click={() => toggleCity(city)} bind:checked={cities[city]} type="checkbox" value={city} class="w-4 h-4 text-amber-100 rounded accent-[#27232F]">
+                                                        <label for={`checkbox-item-${index}`} class="w-full ms-2 text-sm font-mono text-amber-100 rounded ">{city}</label>
+                                                    </div>
+                                                </li>
+                                            {/each}
+                                        </div> 
 
-                                </ul>
-                            </div>
-                        {/if}
+                                    </ul>
+                                </div>
+                            {/if}
 
-                    </div>
+                        </div>
+
+                </ClickOutside>
                     
                 </div>
                 

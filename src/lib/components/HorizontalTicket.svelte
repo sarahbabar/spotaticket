@@ -21,11 +21,20 @@
         while (words.join(' ').length > 37) {
             words.pop();
         }
+
+        let shortenedStr = words.join(' ');
+
+        let lastTwoWords = shortenedStr.split(' ').slice(-2).join(' ');
+        if (lastTwoWords.toLocaleLowerCase() === "presented by" || lastTwoWords.toLocaleLowerCase() === "at the") {
+            words = words.slice(0, -2);
+        }
+
         return words.join(' ');
     }
 
 </script>
 
+<a href="{link}" target="_blank" class="star">
 <div in:fade|global={ {duration: 500} } class="group mx-10 my-6 flex flex-row shadow-lg items-center max-w-[840px] sepia-[0.4] transition duration-200 hover:scale-[1.02] hover:sepia-0">
     <div class="w-60 h-60 relative">
         <img src={ picture } alt="artist img" class="object-cover w-full h-full grayscale group-hover:grayscale-0">
@@ -46,9 +55,9 @@
                 <p>{ date[3] }</p>
             </div>
             
-            <p class="mt-4 text-3xl text-zinc-800 uppercase font-mono font-semibold m-2 text-center">{ artist }</p>
-            <p class="mt-2.5 text-lg uppercase text-center font-dosis font-normal mx-2">{ event }</p>
-            <p class="mt-2.5 text-lg uppercase text-center font-mono underline underline-offset-8 decoration-zinc-800 decoration-[0.5px] mx-4 line">@{ shortenString(venue) }</p>
+            <p class="mt-5 text-3xl text-zinc-800 uppercase font-mono font-semibold m-2 text-center">{ artist }</p>
+            <p class="mt-3 text-lg uppercase text-center font-dosis font-normal mx-2">{ shortenString(event) }</p>
+            <p class="mt-3 text-lg uppercase text-center font-mono underline underline-offset-8 decoration-zinc-800 decoration-[0.5px] mx-4 line">@{ shortenString(venue) }</p>
             <p class="text-lg uppercase text-center font-mono mb-2">{ city }, { country }</p>
 
         </div>
@@ -86,6 +95,7 @@
         
     </div>
 </div>
+</a>
 
 <style lang="postcss">
     /* .custom-borders {
