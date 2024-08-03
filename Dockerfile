@@ -21,7 +21,7 @@ COPY package*.json ./
 
 RUN npm install
 
-RUN npm run build
+RUN tsc
 
 EXPOSE 3000
 
