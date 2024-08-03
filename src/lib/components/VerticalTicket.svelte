@@ -30,7 +30,7 @@
                 <p class="mb-0.5 -mt-1">{ date[3] }</p>
             </div>
 
-            <div class="absolute left-1 top-[233px] mt-3 mb-1 mx-2 rotate-90 origin-left">
+            <div class="absolute left-1 top-[233px] mt-2 mb-1 mx-2 rotate-90 origin-left">
                 <p class="text-center font-mono tracking-[0.2em] text-sm uppercase">general admission</p>
             </div>
 
@@ -45,7 +45,7 @@
 
         <div class="flex flex-col w-60 h-52 box bg-[#fffef8] items-center border-zinc-800/50 border-dashed border-t-2">
             
-            <ul class="flex space-x-3 text-sm font-mono font-bold mb-1 mt-3">
+            <ul class="flex space-x-3 text-xs font-mono font-bold mb-1 mt-3 whitespace-nowrap">
                 <li class="text-zinc-800/50">ADMIT ONE</li> 
                 <li class="text-zinc-800">ADMIT ONE</li> 
                 <li class="text-zinc-800/50">ADMIT ONE</li> 
@@ -67,10 +67,8 @@
                 </div>
             </div>
 
-            <p class="font-mono font-bold text-zinc-800/50 mb-1">{ code }</p>
+            <p class="font-mono font-bold text-zinc-800/50 mb-2">{ code }</p>
             <p class="font-libre text-6xl ">S{ code }</p>
-                
-        
         </div>
         
     </div>
@@ -84,23 +82,10 @@
         mask: var(--mask);
     }
 
-    .box2 {
-        --mask: radial-gradient(10px at 10px 100%,#0000 100%,#27232F) -10px;
-        -webkit-mask: var(--mask);
-        mask: var(--mask);
-    }
-
-    .topp {
-        clip-path: polygon(0 0,100% 0,100% 100%,0 calc(100% - 425px));
-    }
-    
-
     .slanted-edge {
         --p: 55px; /* control the shape (can be percentage) */
         height: 240px;
         aspect-ratio: 1;
         clip-path: polygon(0 0,101% 0,101% calc(100% - var(--p)),0 100%);
     }
-
-
 </style>

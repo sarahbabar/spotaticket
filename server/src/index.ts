@@ -113,6 +113,7 @@ app.delete('/oauth/:uid', (req, res) => {
 });
 
 app.use(handler);
+app.use(express.static('../static'));
 
 app.listen(3000, () => {
     console.log('listening on port 3000');

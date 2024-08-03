@@ -281,3 +281,12 @@
         </div>
     {/if}
 </main>
+
+<style lang="postcss">
+
+::-webkit-scrollbar-track {
+        @apply bg-[#27232F];
+        @apply rounded-full
+    }
+
+</style>

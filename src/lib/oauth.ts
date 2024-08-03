@@ -46,8 +46,14 @@ export async function getTableTokens(uuid: string): Promise<OAuthData | undefine
             console.log("something went wrong in get table token", response.status);
             return
         }
-        const oauthData: OAuthData = await response.json();
-        return oauthData;
+
+        try {
+            const oauthData: OAuthData = await response.json();
+            return oauthData;
+        } catch (error) {
+            console.log("table token no work :(((");
+        }
+        
     } catch (error) {
         console.log("error in get table token", error);
     }
