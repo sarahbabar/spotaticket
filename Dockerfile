@@ -15,7 +15,7 @@ COPY . .
 
 RUN npm run build
 
-WORKDIR ./server
+WORKDIR /app/server
 
 COPY package*.json ./
 
