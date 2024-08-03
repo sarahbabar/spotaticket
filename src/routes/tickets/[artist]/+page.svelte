@@ -281,7 +281,3 @@
         </div>
     {/if}
 </main>
-
-<style lang="postcss">
-
-</style>

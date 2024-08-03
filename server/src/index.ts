@@ -3,7 +3,7 @@ import cors from 'cors';
 // @ts-ignore
 import { handler } from "../../build/handler.js";
 import { config } from "dotenv";
-import { db, initializeDatabase, insertEvents, deleteTemp, swapState, TicketMasterEvent, searchTable, insertOAuthData, searchOAuthData, deleteOAuthUser, deleteExpired, testFun } from "./database.js";
+import { db, initializeDatabase, insertEvents, deleteTemp, swapState, TicketMasterEvent, searchTable, insertOAuthData, searchOAuthData, deleteOAuthUser, deleteExpired } from "./database.js";
 import { getEvents } from "./ticketmaster.js";
 import { dmas } from "./constants.js";
 
@@ -37,7 +37,7 @@ app.post('/api/force-update', (req, res) => {
 
 app.get('/api/search', (req, res) => {
     const { spotifyID, artistName } = req.query;
-    console.log(`spotifyID:${spotifyID}\nartistName:${artistName}`);
+    // console.log(`spotifyID:${spotifyID}\nartistName:${artistName}`);
     // check if spotifyID and artistName are given
     if (!spotifyID || !artistName) {
         return res.status(400).send('Missing spotify ID or atist name');
@@ -57,7 +57,7 @@ app.get('/oauth/:uid', (req, res) => {
     }
 
     const uid = req.params.uid;
-    console.log(`uid:${uid}`);
+    // console.log(`uid:${uid}`);
 
     if (!uid) {
         return res.status(400).send('Missing uid');
@@ -99,7 +99,7 @@ app.delete('/oauth/:uid', (req, res) => {
         return
     }
     const uid = req.params.uid;
-    console.log("deleting ", uid);
+    // console.log("deleting ", uid);
 
     if (!uid) {
         return res.status(400).send('Missing uid');
@@ -118,13 +118,7 @@ app.listen(3000, () => {
     console.log('listening on port 3000');
 });
 
-//swapState();
-
-// when refreshing/clearing db also check for expired tokens 
-// deleteExpired();
-
 const refreshTime = (12 * 60 * 60 * 1000); //12 hours
-// const mirmir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function fetchAndStore() {
     deleteTemp();
@@ -162,9 +156,3 @@ async function refreshDB() {
 }
 
 setInterval(refreshDB, refreshTime);
-
-// fetchAndStore();
-
-// searchTable('.', 'Vampire Weekend');
-
-// setInterval(fetchAndStore, refreshTime);

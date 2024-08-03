@@ -14,7 +14,7 @@ export type OAuthData = {
 };
 
 export async function setOAuthData(oauthdata: OAuthData): Promise<boolean> {
-    console.log("setOauthData called");
+    // console.log("setOauthData called");
     try {
         const response = await fetch(`http://localhost:3000/oauth`, {
             method: 'POST',
@@ -63,7 +63,7 @@ export async function checkToken(uuid: string, accessToken: string, refreshToken
         const tokenInfo = await getRefreshToken(refreshToken);
 
         if (tokenInfo === undefined) {
-            console.log("something went wrong in check token");
+            // console.log("something went wrong in check token");
 
             try {
                 const response = await fetch(`http://localhost:3000/oauth/${uuid}`, {
@@ -80,7 +80,7 @@ export async function checkToken(uuid: string, accessToken: string, refreshToken
             throw redirect(302, "/");
         }
         // set the updated oauth/token info for the uuid in the db
-        console.log(tokenInfo);
+        // console.log(tokenInfo);
         const result = await setOAuthData({
             id: uuid,
             access_token: tokenInfo.access_token,
@@ -93,11 +93,11 @@ export async function checkToken(uuid: string, accessToken: string, refreshToken
             throw redirect(302, "/");
         }
         // send the new access token
-        console.log("returning new access token: ", tokenInfo.access_token);
+        // console.log("returning new access token: ", tokenInfo.access_token);
         return tokenInfo.access_token;
     }
     // send the current valid access token
-    console.log("returning old access token: ", accessToken);
+    // console.log("returning old access token: ", accessToken);
     return accessToken;
 }
 

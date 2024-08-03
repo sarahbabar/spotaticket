@@ -1,6 +1,6 @@
 export async function load({ fetch, parent }) {
 
-    const { longTermArtists, mediumTermArtists, profile, player } = await parent();
+    const { longTermArtists, mediumTermArtists, profile} = await parent();
 
     let key = 0;
 
@@ -24,8 +24,7 @@ export async function load({ fetch, parent }) {
     return {
         longTermArtists: longTermArtistsEvents,
         mediumTermArtists: mediumTermArtistsEvents,
-        profile: profile,
-        player: player,
+        profile: profile
     };
 }
 

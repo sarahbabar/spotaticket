@@ -1,7 +1,7 @@
 export async function load({ fetch, params, parent }) {
 
     const slug = params.artist;
-    const { longTermArtists, mediumTermArtists, profile, player } = await parent();
+    const { longTermArtists, mediumTermArtists, profile } = await parent();
     const artist = decodeURIComponent(slug);
 
     let artistInfo = longTermArtists.find((a: { name: string; }) => a.name === artist);

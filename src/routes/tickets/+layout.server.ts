@@ -1,10 +1,9 @@
-import { NAMESPACE_KEY, TICKETMASTER_API_KEY } from '$env/static/private';
-import { Namespace } from '$lib/namespace';
+import { TICKETMASTER_API_KEY } from '$env/static/private';
 import { checkToken, getTableTokens } from '$lib/oauth';
 import { error, redirect } from '@sveltejs/kit';
 
 const profileURL = `https://api.spotify.com/v1/me`;
-const playerURL = `https://api.spotify.com/v1/me/player/currently-playing`;
+// const playerURL = `https://api.spotify.com/v1/me/player/currently-playing`;
 
 export async function load({ cookies }) {
 
@@ -24,18 +23,18 @@ export async function load({ cookies }) {
     const access_token = await checkToken(uuid, oauthdata.access_token, oauthdata.refresh_token, expires_in, time_stamp);
 
     try {
-        const [longTermArtists, mediumTermArtists, profileData, playerData] = await Promise.all([
+        const [longTermArtists, mediumTermArtists, profileData] = await Promise.all([
             getTopArtists(access_token, "long_term"),
             getTopArtists(access_token, "medium_term"),
             getProfile(access_token),
-            getPlaying(access_token)
+            // getPlaying(access_token)
         ]);
         
         return {
             longTermArtists: longTermArtists.items,
             mediumTermArtists: mediumTermArtists.items,
-            profile: profileData,
-            player: playerData
+            profile: profileData
+            // player: playerData
         };
     }
     catch(error) {
@@ -72,22 +71,22 @@ async function getProfile(accessToken: string): Promise<any> {
     return await response.json();
 }
 
-async function getPlaying(accessToken: string): Promise<any> {
+// async function getPlaying(accessToken: string): Promise<any> {
 
-    try {
-        const response = await fetch(playerURL, {
-            headers: {
-                "Authorization": `Bearer ${accessToken}`
-            }
-        });
-        if(!response.ok || response.status === 204) {
-            return {};
-        }
-        return await response.json();
+//     try {
+//         const response = await fetch(playerURL, {
+//             headers: {
+//                 "Authorization": `Bearer ${accessToken}`
+//             }
+//         });
+//         if(!response.ok || response.status === 204) {
+//             return {};
+//         }
+//         return await response.json();
         
-    } catch (error) {
-        return {};
-    }
-}
+//     } catch (error) {
+//         return {};
+//     }
+// }
 
 

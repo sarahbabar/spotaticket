@@ -1,14 +1,8 @@
 <script lang="ts">
 	import Card from '$lib/components/Card.svelte';
-    import HorizontalTicket from '$lib/components/HorizontalTicket.svelte';
-    import VericalTicket from '$lib/components/VerticalTicket.svelte';
-    //@ts-ignore
-	import VirtualList from '@sveltejs/svelte-virtual-list';
-	import { onMount } from 'svelte';
-	import { fade, slide, blur, fly, scale, draw, crossfade } from 'svelte/transition';
     
     export let data;
-    const { longTermArtists, mediumTermArtists, profile, player } = data;
+    const { longTermArtists, mediumTermArtists, profile } = data;
     
     let showLongTerm = true;
 
@@ -70,9 +64,3 @@
         </div>
     </div>
 </main>
-
-<style lang="postcss">
-
-    
-
-</style>

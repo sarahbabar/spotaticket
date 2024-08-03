@@ -5,7 +5,6 @@ let tempTable = "2";
 
 export const db = new Database("./db/eventsdata.db");
 
-
 export const initializeDatabase = () => {
     // 2 tables to hold info about events, 1 to read from while/when the other is being updated
     const createEvents1Query = `
@@ -67,10 +66,6 @@ export const initializeDatabase = () => {
             spotify_id TEXT
         )
     `;
-    const deleteOauthQuery = `
-        DROP TABLE IF EXISTS oauth
-    `;
-
     const createOAuthQuery = `
         CREATE TABLE IF NOT EXISTS oauth (
             id TEXT PRIMARY KEY,
@@ -95,7 +90,6 @@ export const initializeDatabase = () => {
     db.prepare(createAttractions1Query).run();
     db.prepare(createAttractions2Query).run();
     db.prepare(createStateQuery).run();
-    // db.prepare(deleteOauthQuery).run();
     db.prepare(createOAuthQuery).run();
     db.prepare(initialStateQuery1).run();
     db.prepare(initialStateQuery2).run();
@@ -110,9 +104,6 @@ export const initializeDatabase = () => {
 
     mainTable = tableNumber;
     tempTable = (mainTable === '1') ? '2' : '1';
-
-    // mainAttrTable = "attractions".concat(tableNumber);
-    // tempAttrTable = (mainEventsTable === 'attractions1') ? 'attractions2' : 'attractions1';
 };
 
 initializeDatabase();
@@ -139,8 +130,6 @@ export type TicketMasterAttraction = {
     artist_url: string,
     spotify_id: string
 };
-
-const easternTime = new Date().toLocaleTimeString("en-US", {timeZone: 'America/New_York'});
 
 // insert concert events and attractions into the the temp tables for each
 export const insertEvents = (events: TicketMasterEvent[]) => {
@@ -275,17 +264,5 @@ const prepExpiredDelete = db.prepare(deleteExpiredQuery);
 
 export const deleteExpired = () => {
     const currentTime = Date.now()/1000;
-
     prepExpiredDelete.run({currentTime});
-}
-
-export const testFun = (name: string) => {
-    const testQuery = `
-        SELECT * 
-        FROM attractions2 
-        WHERE artist_name LIKE ?`;
-    const testQst = db.prepare(testQuery);
-    const stuff = testQst.all(name);
-    console.log(stuff);
-    return stuff;
-}
+};
