@@ -12,7 +12,7 @@
     }
 </script>
 
-<svelte:body on:click={handleClick} />
+<svelte:document on:click={handleClick} />
 <div bind:this={_this} style="width: min-content; height: min-content">
     <slot />
 </div>

@@ -98,25 +98,41 @@ app.listen(3000, () => {
 //swapState();
 
 // when refreshing/clearing db also check for expired tokens 
-deleteExpired();
+// deleteExpired();
 
 const refreshTime = (12 * 60 * 60 * 1000); //12 hours
-const mirmir = (ms: number) => new Promise((r) => setTimeout(r, ms));
+// const mirmir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function fetchAndStore() {
-    try {
-        deleteTemp();
-        for (const dma in dmas) {
+    deleteTemp();
+    for (const dma in dmas) {
+        try {
             console.log(`fetching for ${dma}`);
             const events = await getEvents(Number(dma));
             insertEvents(events);
             console.log(`inserted ${events.length} events`);
+        } catch (error) {
+            console.log("error in fetch and store", error);
+            return false;
+        }    
+    }
+    return true;
+}
+
+async function refreshDB() {
+    console.log("starting data refresh");
+    try {
+        deleteExpired();
+        if (await fetchAndStore()) {
+            swapState();
         }
     } catch (error) {
-        console.log("error in fetch and store", error);
+        console.log("something went wrong during data refresh L");
     }
 }
 
+console.log("meow");
+// setInterval(refreshDB, refreshTime);
 
 // fetchAndStore();
 

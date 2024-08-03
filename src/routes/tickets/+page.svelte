@@ -18,7 +18,7 @@
     
 </script>
 
-<body class="bg-[#27232F] my-4 flex flex-col items-center">
+<main class="bg-[#27232F] my-4 flex flex-col items-center">
 
     <div class="flex flex-col justify-center items-center lg:flex-row mb-5 lg:mb-7">
         <h1 class="text-3xl text-center font-mono font-bold text-amber-100 mt-7 mb-2 md:text-5xl lg:flex">
@@ -69,7 +69,7 @@
             {/each}
         </div>
     </div>
-</body>
+</main>
 
 <style lang="postcss">
 

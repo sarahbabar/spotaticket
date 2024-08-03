@@ -4,7 +4,7 @@
 
 </script>
 
-<body class="bg-[#27232F] w-screen h-screen flex">
+<main class="bg-[#27232F] w-screen h-screen flex">
     <!-- <h1 class="text-4xl">Spotaticket</h1> -->
 
     <div class="w-full flex flex-col items-center justify-center">
@@ -19,6 +19,6 @@
 
     </div>
 
-</body>
+</main>
 
 

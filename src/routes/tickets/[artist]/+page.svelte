@@ -108,6 +108,12 @@
         showDrop = !showDrop;
     }
 
+    function close() {
+        if (showDrop) {
+            showDrop = !showDrop;
+        }
+    }
+
     let selectAll = true;
     let cities: {[key: string]: boolean} = {};
 
@@ -144,7 +150,8 @@
 
 </script>
 
-<body in:fade|global={ {duration: 500} } class="bg-[#27232F] my-4 flex flex-col items-center">
+
+<main class="bg-[#27232F] my-4 flex flex-col items-center">
 
     {#if events.length > 0}
         <div class="flex flex-col items-center">
@@ -156,8 +163,8 @@
                         <i class="text-4xl fa-solid fa-arrow-left text-amber-100"></i>
                     </a>
                     
-                    <ClickOutside on:clickoutside={() => console.log("meow")}>
-                        
+                    
+                    <ClickOutside on:clickoutside={close}>
                      
                         <div class="relative inline-block text-left mb-2">
                             <button id="dropdownBgHoverButton" data-dropdown-toggle="dropdownBgHover" class="text-[#27232F] bg-amber-100 font-mono rounded-full text-base font-bold px-5 py-2.5 text-center inline-flex items-center" type="button" on:click={toggleDropDown}>
@@ -195,7 +202,9 @@
 
                         </div>
 
-                </ClickOutside>
+                    </ClickOutside>
+
+            
                     
                 </div>
                 
@@ -271,7 +280,7 @@
             <p>Could not find events for this artist ;-; </p>
         </div>
     {/if}
-</body>
+</main>
 
 <style lang="postcss">
 
