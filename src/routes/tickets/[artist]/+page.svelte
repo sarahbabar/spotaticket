@@ -276,8 +276,13 @@
         </div>
 
     {:else}
-        <div class="text-3xl text-amber-100 font-mono">
-            <p>Could not find events for this artist ;-; </p>
+    
+    <div class="w-screen h-screen flex flex-col items-center justify-center">
+            <h1 class="text-lg md:text-3xl text-amber-100 font-mono -mt-10 mb-5 mx-2 text-center">Could not find events for this artist ;-; </h1>
+            <div class="flex text-amber-100">
+                <a href="/tickets"> <i class="text-xl fa-solid fa-arrow-left text-amber-100 m-2"></i> </a>
+                <h2 class="text-lg font-mono m-2">Go Back Home</h2>
+            </div>
         </div>
     {/if}
 </main>

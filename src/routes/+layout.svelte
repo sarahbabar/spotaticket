@@ -4,6 +4,20 @@
   
 <slot />
 
+<svelte:head>
+    <title>SPOTATICKET</title>
+    <meta name="description" content="Concerts for your top artists" />
+    <meta name="keywords" content="Concert, Spotify, Music, Artist, Ticketmaster, Event" />
+
+    <meta property="og:title" content="SPOTATICKET" />
+    <meta property="og:description" content="Concerts for your top artists" />
+
+    <meta name="twitter:title" content="SPOTATICKET"  />
+    <meta name="twitter:description" content="Concerts for your top artists" />
+
+    <meta name="theme-color" content="#fef3c7" />
+</svelte:head>
+
 <style lang="postcss">
     :global(::-webkit-scrollbar) {
         width: 12px;
