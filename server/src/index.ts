@@ -131,7 +131,6 @@ async function refreshDB() {
     }
 }
 
-console.log("meow");
 // setInterval(refreshDB, refreshTime);
 
 // fetchAndStore();
