@@ -15,17 +15,14 @@ COPY . .
 
 RUN npm run build
 
-WORKDIR /app/server
+COPY ./server/package*.json ./server/
 
-COPY package*.json ./
+RUN cd ./server && npm install
 
-RUN npm install
-
-RUN tsc
+RUN cd ./server && npm run build
 
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
-
+CMD ["node", "./server/dist/index.js"]
 
 
