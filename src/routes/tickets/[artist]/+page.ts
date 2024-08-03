@@ -22,7 +22,7 @@ export async function load({ fetch, params, parent }) {
 }
 
 // search db using artist name and spotidy id as keywords
-async function getEvents(spotifyID: string, artist: string, fetch: typeof window.fetch): Promise<any> {
+async function getEvents(spotifyID: string, artist: string, fetch: any): Promise<any> {
 
     const encArtist = encodeURIComponent(artist);
     const encSpotifyID = encodeURIComponent(spotifyID);

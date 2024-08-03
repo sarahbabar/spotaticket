@@ -27,7 +27,7 @@ const authUrl: string =
 // user logging in for the first time - use code to get token, create uuid and store it in the session
 export async function GET({ url, cookies }) {
     const code = url.searchParams.get("code");
-    console.log(code);
+    // console.log(code);
     
     if (code) {
         const token = await getToken(code);
@@ -50,7 +50,7 @@ export async function GET({ url, cookies }) {
             throw redirect(302, authUrl);
         }
         // otherwise send to tickets page
-        console.log("Access Token:", token);
+        // console.log("Access Token:", token);
         throw redirect(302, "/tickets");
 
     }
