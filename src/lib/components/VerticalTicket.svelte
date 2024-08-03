@@ -16,7 +16,7 @@
 </script>
 
 <a href="{link}" target="_blank" class="star">
-    <div in:fade|global={ {duration: 500} } out:fade|global={ {duration: 300} } class="flex flex-col items-center mb-6 mt-2 mx-10 md:mt-10 md:mb-10 grayscale sepia-[0.4]">
+    <div in:fade|global={ {duration: 500} } class="flex flex-col items-center mb-6 mt-2 mx-10 md:mt-10 md:mb-10 grayscale sepia-[0.4]">
 
         <div class="flex flex-col items-center w-60 h-[450px] bg-[#fffef8] relative">
             
