@@ -27,7 +27,7 @@ async function getEvents(spotifyID: string, artist: string, fetch: any): Promise
     const encArtist = encodeURIComponent(artist);
     const encSpotifyID = encodeURIComponent(spotifyID);
 
-    const apiUrl = `/api/search?spotifyID=${encSpotifyID}&artistName=${encArtist}`;
+    const apiUrl = `http://localhost:3000/api/search?spotifyID=${encSpotifyID}&artistName=${encArtist}`;
     try {
         const response = await fetch(apiUrl, {
             method: 'GET'
