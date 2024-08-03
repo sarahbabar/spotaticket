@@ -6,6 +6,11 @@ COPY package*.json ./
 
 RUN npm install
 
+ARG PUBLIC_CLIENT_ID
+ARG CLIENT_SECRET
+ARG PUBLIC_REDIRECT_URI
+ARG ADMIN_KEY
+
 COPY . .
 
 RUN npm run build
