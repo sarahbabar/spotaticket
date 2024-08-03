@@ -3,7 +3,7 @@ import Database from "better-sqlite3";
 let mainTable = "1";
 let tempTable = "2";
 
-export const db = new Database("eventsdata.db");
+export const db = new Database("./db/eventsdata.db");
 
 
 export const initializeDatabase = () => {

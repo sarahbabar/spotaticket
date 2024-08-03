@@ -7,10 +7,33 @@ import { db, initializeDatabase, insertEvents, deleteTemp, swapState, TicketMast
 import { getEvents } from "./ticketmaster.js";
 import { dmas } from "./constants.js";
 
-
 config();
 const app = express();
 app.use(cors());
+
+let isUpdating = false;
+const updateProgress = new Map();
+
+function mapToObj(map: any) {
+    const obj: any = {};
+    for (const [key, value] of map) {
+        obj[key] = value;
+    }
+    return obj;
+}
+
+app.get('/api/progress', (req, res) => {
+    res.json({isUpdating, updateProgress: mapToObj(updateProgress)});
+});
+
+app.post('/api/force-update', (req, res) => {
+    if (req.headers.token !== process.env.ADMIN_KEY) {
+        res.status(401).send('unauthorized');
+        return
+    }
+    refreshDB();
+    return res.status(201).send('updating! :)');
+}); 
 
 app.get('/api/search', (req, res) => {
     const { spotifyID, artistName } = req.query;
@@ -110,6 +133,7 @@ async function fetchAndStore() {
             console.log(`fetching for ${dma}`);
             const events = await getEvents(Number(dma));
             insertEvents(events);
+            updateProgress.set(dma, events.length);
             console.log(`inserted ${events.length} events`);
         } catch (error) {
             console.log("error in fetch and store", error);
@@ -120,18 +144,24 @@ async function fetchAndStore() {
 }
 
 async function refreshDB() {
+    if (isUpdating) {
+        return
+    }
     console.log("starting data refresh");
     try {
         deleteExpired();
+        isUpdating = true;
+        updateProgress.clear();
         if (await fetchAndStore()) {
             swapState();
         }
+        isUpdating = false;
     } catch (error) {
         console.log("something went wrong during data refresh L");
     }
 }
 
-// setInterval(refreshDB, refreshTime);
+setInterval(refreshDB, refreshTime);
 
 // fetchAndStore();
 
