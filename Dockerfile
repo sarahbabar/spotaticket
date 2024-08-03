@@ -23,6 +23,8 @@ RUN cd ./server && npm run build
 
 EXPOSE 3000
 
-CMD ["node", "./server/dist/index.js"]
+WORKDIR /app/server
+
+CMD ["node", "./dist/index.js"]
 
 
