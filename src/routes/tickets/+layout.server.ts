@@ -25,7 +25,7 @@ export async function load({ cookies }) {
     try {
         const [longTermArtists, mediumTermArtists, profileData] = await Promise.all([
             getTopArtists(access_token, "long_term"),
-            getTopArtists(access_token, "medium_term"),
+            getTopArtists(access_token, "short_term"),
             getProfile(access_token),
             // getPlaying(access_token)
         ]);
@@ -88,5 +88,3 @@ async function getProfile(accessToken: string): Promise<any> {
 //         return {};
 //     }
 // }
-
-

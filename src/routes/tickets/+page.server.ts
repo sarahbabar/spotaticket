@@ -20,7 +20,6 @@ export async function load({ fetch, parent }) {
         getArtistsWithEvents(mediumTermArtists)
     ]);
 
-
     return {
         longTermArtists: longTermArtistsEvents,
         mediumTermArtists: mediumTermArtistsEvents,

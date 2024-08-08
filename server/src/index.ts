@@ -12,6 +12,7 @@ const app = express();
 app.use(cors());
 
 let isUpdating = false;
+
 const updateProgress = new Map();
 
 function mapToObj(map: any) {

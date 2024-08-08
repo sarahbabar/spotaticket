@@ -12,7 +12,7 @@
     export let row: string;
     export let date: string[];
     export let code: string;
-
+    
 </script>
 
 <a href="{link}" target="_blank" class="star">
@@ -70,9 +70,7 @@
             <p class="font-mono font-bold text-zinc-800/50 mb-2">{ code }</p>
             <p class="font-libre text-6xl ">S{ code }</p>
         </div>
-        
     </div>
-
 </a>
 
 <style lang="postcss">

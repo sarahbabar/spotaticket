@@ -18,7 +18,6 @@
         <h1 class="text-3xl text-center font-mono font-bold text-amber-100 mt-7 mb-2 md:text-5xl lg:flex">
             <p class="uppercase lg:mr-6">{profile.display_name}'S</p>
             <p>TOP ARTISTS</p>
-            
         </h1>
         
         <label for="toggleTwo" class="flex items-center star select-none lg:mt-5 lg:ml-4 lg:mr-1">
@@ -29,12 +28,11 @@
                 <div class="font-mono text-xl font-bold absolute w-10 h-10 transition ease-in-out duration-500 bg-amber-100 rounded-full dot left-[5px] top-1 
                             peer-checked:translate-x-12 peer-checked:bg-[#4b4359] flex items-center justify-center text-[#4b4359] peer-checked:text-amber-100
         
-                  before:content-['1Y'] peer-checked:before:content-['6M']
+                  before:content-['1Y'] peer-checked:before:content-['1M']
                 ">
                 </div>
             </div>
         </label>
-
     </div>
 
     <div class="flex justify-center items-center min-h-screen">

@@ -31,7 +31,6 @@ export async function GET({ url, cookies }) {
     
     if (code) {
         const token = await getToken(code);
-
         const uuid = generate_random_uuid();
 
         cookies.delete("session", { path: "/" });
@@ -52,7 +51,6 @@ export async function GET({ url, cookies }) {
         // otherwise send to tickets page
         // console.log("Access Token:", token);
         throw redirect(302, "/tickets");
-
     }
     // if no code, redirect back to authURL and restart oauth process
     throw redirect(302, authUrl);

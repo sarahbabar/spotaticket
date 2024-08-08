@@ -86,43 +86,26 @@
                                 <p class="text-3xl">{ seat }</p>
                             </div>
                         </div>
-                
-    
-                    </div>
-                        
+                    </div>  
                     <p class="pt-2.5 font-mono font-bold text-zinc-800/50 absolute top-1/2 transform -translate-y-4 right-0 -rotate-90">#{ code }</p>
                 </div>
             </div>
             
         </div>
     </div>
-    </a>
+</a>
     
-    <style lang="postcss">
-        /* .custom-borders {
-            border-left-width: 2px;
-            border-left-style: dashed;
-            border-right-width: 10px;
-            border-right-style: dotted;
-            border-right-color: slategray;
-        } */
-        .box {
-            --mask: radial-gradient(4px at right,#ffffff00 97%,#ffffff) 50%/ 100% 13px;
-            -webkit-mask: var(--mask);
-                    mask: var(--mask);
-        }
+<style lang="postcss">
+    .box {
+        --mask: radial-gradient(4px at right,#ffffff00 97%,#ffffff) 50%/ 100% 13px;
+        -webkit-mask: var(--mask);
+                mask: var(--mask);
+    }
+
+    .custom-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr; /* The middle column set to auto will grow as needed */
+        align-items: center; /* Align the items vertically at the center of their cells */
+    }
     
-        .custom-grid {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr; /* The middle column set to auto will grow as needed */
-            align-items: center; /* Align the items vertically at the center of their cells */
-        }
-    
-        /* .text-hide {
-            text-overflow: ".";
-            overflow: hidden;
-            white-space: nowrap;  
-        } */
-    
-    
-    </style>
+</style>

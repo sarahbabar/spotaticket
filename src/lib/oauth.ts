@@ -60,7 +60,6 @@ export async function getTableTokens(uuid: string): Promise<OAuthData | undefine
 }
 
 export async function checkToken(uuid: string, accessToken: string, refreshToken: string, expiry: number, timeStamp: number): Promise<string> {
-
     // current time in sec
     const currentTime = Date.now()/1000;
 
@@ -70,7 +69,6 @@ export async function checkToken(uuid: string, accessToken: string, refreshToken
 
         if (tokenInfo === undefined) {
             // console.log("something went wrong in check token");
-
             try {
                 const response = await fetch(`http://localhost:3000/oauth/${uuid}`, {
                     method: 'DELETE',

@@ -150,7 +150,6 @@
 
 </script>
 
-
 <main class="bg-[#27232F] my-4 flex flex-col items-center">
 
     {#if events.length > 0}
@@ -163,9 +162,7 @@
                         <i class="text-4xl fa-solid fa-arrow-left text-amber-100"></i>
                     </a>
                     
-                    
                     <ClickOutside on:clickoutside={close}>
-                     
                         <div class="relative inline-block text-left mb-2">
                             <button id="dropdownBgHoverButton" data-dropdown-toggle="dropdownBgHover" class="text-[#27232F] bg-amber-100 font-mono rounded-full text-base font-bold px-5 py-2.5 text-center inline-flex items-center" type="button" on:click={toggleDropDown}>
                                 <i class="fa-solid fa-earth-americas text-[#27232F] mr-2"></i>
@@ -199,13 +196,8 @@
                                     </ul>
                                 </div>
                             {/if}
-
                         </div>
-
                     </ClickOutside>
-
-            
-                    
                 </div>
                 
                 <div class="">
@@ -232,26 +224,9 @@
                                 />            
                             </VirtualList> 
                         {/if}
-
-                    
                     </div>
 
                     <div class="block lg:hidden">
-                        <!-- <VirtualList height="700px" items={filteredEvents} let:item>  
-                            <VerticalTicket
-                                    artist={artistWithEvents[0].name}
-                                    picture={artistWithEvents[0].images[0].url}
-                                    event={item.name}
-                                    city={item.city}
-                                    country={item.country}
-                                    venue={item.venue}
-                                    link={item.url}
-                                    seat={randomIntFromID((item.event_id).concat(item.artist_id))}
-                                    row={rowLetter(randomIntFromID((item.event_id).concat(item.artist_id)))}
-                                    date={formatDate(item.date)}
-                                    code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
-                                />   
-                        </VirtualList>  -->
 
                         <div use:horizontalScroll class="flex w-80 overflow-x-auto scrollbar scrollbar-thin">  
                             {#each filteredEvents as item}
