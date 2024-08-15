@@ -5,15 +5,15 @@
 <slot />
 
 <svelte:head>
-    <title>SPOTATICKET</title>
-    <meta name="description" content="Concerts for your top artists" />
-    <meta name="keywords" content="Concert, Spotify, Music, Artist, Ticketmaster, Event" />
+    <title>TopArtists</title>
+    <meta name="description" content="Your top artists on spotify" />
+    <meta name="keywords" content="Spotify, Music, Artist" />
 
-    <meta property="og:title" content="SPOTATICKET" />
-    <meta property="og:description" content="Concerts for your top artists" />
+    <meta property="og:title" content="TopArtists" />
+    <meta property="og:description" content="Your top artists on spotify" />
 
-    <meta name="twitter:title" content="SPOTATICKET"  />
-    <meta name="twitter:description" content="Concerts for your top artists" />
+    <meta name="twitter:title" content="TopArtists"  />
+    <meta name="twitter:description" content="Your top artists on spotify" />
 
     <meta name="theme-color" content="#fef3c7" />
 </svelte:head>

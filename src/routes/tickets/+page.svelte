@@ -39,25 +39,17 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-6xl w-full m-5">
             {#each showLongTerm ? longTermArtists : mediumTermArtists as artist, index (artist.key)}
                 {@const cursor = artist.name === "Charli xcx" ? "apple" : "star"}
-                {#if artist.eventData.length > 0}
-                    <a href="{`/tickets/${artist.name}`}" class="{cursor}">
+                
+                    <a href="{artist.external_urls.spotify}" target="_blank" class="{cursor}">
                         <Card
                             artist = {artist.name}
-                            eventDataLen = {artist.eventData.length}
+                        
                             picture = {artist.images[0].url}
                             index = {index}
                         ></Card>
                     </a>
-                {:else}
-                    <div class="{cursor}">
-                        <Card
-                            artist = {artist.name}
-                            eventDataLen = {artist.eventData.length}
-                            picture = {artist.images[0].url}
-                            index = {index}
-                        ></Card>
-                    </div>
-                {/if}
+               
+                
             {/each}
         </div>
     </div>
