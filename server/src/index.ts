@@ -157,4 +157,4 @@ async function refreshDB() {
     }
 }
 
-setInterval(refreshDB, refreshTime);
+// setInterval(refreshDB, refreshTime);

@@ -202,7 +202,7 @@
                 
                 <div class="">
                     <div class="hidden lg:block">
-                        {#if filteredEvents.length === 0}
+                        <!-- {#if filteredEvents.length === 0}
                             <div class="w-[840px] mx-10">
 
                             </div>
@@ -223,12 +223,12 @@
                                     code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
                                 />            
                             </VirtualList> 
-                        {/if}
+                        {/if} -->
                     </div>
 
                     <div class="block lg:hidden">
 
-                        <div use:horizontalScroll class="flex w-80 overflow-x-auto scrollbar scrollbar-thin">  
+                        <!-- <div use:horizontalScroll class="flex w-80 overflow-x-auto scrollbar scrollbar-thin">  
                             {#each filteredEvents as item}
                                 <VerticalTicket
                                     artist={artistWithEvents.name}
@@ -244,7 +244,7 @@
                                     code={randomCode(item.event_id, item.city, formatDate(item.date)[0])}
                                 />   
                             {/each} 
-                        </div> 
+                        </div>  -->
                     </div>
                 </div> 
             </div>
