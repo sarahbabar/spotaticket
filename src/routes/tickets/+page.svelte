@@ -43,7 +43,6 @@
                     <a href="{artist.external_urls.spotify}" target="_blank" class="{cursor}">
                         <Card
                             artist = {artist.name}
-                        
                             picture = {artist.images[0].url}
                             index = {index}
                         ></Card>
