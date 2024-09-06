@@ -84,6 +84,6 @@
         --p: 55px; /* control the shape (can be percentage) */
         height: 240px;
         aspect-ratio: 1;
-        clip-path: polygon(0 0,101% 0,101% calc(100% - var(--p)),0 100%);
+        clip-path: polygon(-1% 0,101% 0,101% calc(100% - var(--p)), -1% 100%);
     }
 </style>

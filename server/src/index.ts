@@ -41,7 +41,7 @@ app.get('/api/search', (req, res) => {
     // console.log(`spotifyID:${spotifyID}\nartistName:${artistName}`);
     // check if spotifyID and artistName are given
     if (!spotifyID || !artistName) {
-        return res.status(400).send('Missing spotify ID or atist name');
+        return res.status(400).send('Missing spotify ID or artist name');
     }
     try {
         const searchResults = searchTable(spotifyID as string, artistName as string);
